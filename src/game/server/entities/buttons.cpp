@@ -390,6 +390,11 @@ void CBaseButton::Spawn()
 	pev->solid = SOLID_BSP;
 	SetModel(STRING(pev->model));
 
+    if (m_iStyle >= 32)
+        LIGHT_STYLE(m_iStyle, "z");
+    else if (m_iStyle <= -32)
+        LIGHT_STYLE(-m_iStyle, "a");
+
 	if (pev->speed == 0)
 		pev->speed = 40;
 
@@ -595,6 +600,10 @@ void CBaseButton::TriggerAndWait()
 
 	pev->frame = 1; // use alternate textures
 
+    if (m_iStyle >= 32)
+        LIGHT_STYLE(m_iStyle, "a");
+    else if (m_iStyle <= -32)
+        LIGHT_STYLE(-m_iStyle, "z");
 
 	SUB_UseTargets(m_hActivator, USE_TOGGLE, 0);
 }
@@ -611,6 +620,11 @@ void CBaseButton::ButtonReturn()
 		AngularMove(m_vecAngle1, pev->speed);
 
 	pev->frame = 0; // use normal textures
+
+    if (m_iStyle >= 32)
+        LIGHT_STYLE(m_iStyle, "z");
+    else if (m_iStyle <= -32)
+        LIGHT_STYLE(-m_iStyle, "a");
 }
 
 void CBaseButton::ButtonBackHome()

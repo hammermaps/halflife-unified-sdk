@@ -131,6 +131,11 @@ void CBreakable::Spawn()
 	// Flag unbreakable glass as "worldbrush" so it will block ALL tracelines
 	if (!IsBreakable() && pev->rendermode != kRenderNormal)
 		pev->flags |= FL_WORLDBRUSH;
+
+    if (m_iStyle >= 32)
+        LIGHT_STYLE(m_iStyle, "z");
+    else if (m_iStyle <= -32)
+        LIGHT_STYLE(-m_iStyle, "a");
 }
 
 const char* CBreakable::pSoundsWood[] =
@@ -699,17 +704,21 @@ void CBreakable::Die()
 
 	// Don't fire something that could fire myself
 	pev->targetname = string_t::Null;
-
 	pev->solid = SOLID_NOT;
+
+    if (m_iStyle >= 32)
+        LIGHT_STYLE(m_iStyle, "a");
+    else if (m_iStyle <= -32)
+        LIGHT_STYLE(-m_iStyle, "z");
+    
 	// Fire targets on break
 	SUB_UseTargets(nullptr, USE_TOGGLE, 0);
 
 	SetThink(&CBreakable::SUB_Remove);
 	pev->nextthink = pev->ltime + 0.1;
 	if (!FStringNull(m_iszSpawnObject))
-		CBaseEntity::Create(STRING(m_iszSpawnObject), VecBModelOrigin(this), pev->angles, this);
-
-
+        Create(STRING(m_iszSpawnObject), VecBModelOrigin(this), pev->angles, this);
+    
 	if (Explodable())
 	{
 		ExplosionCreate(Center(), pev->angles, this, ExplosionMagnitude(), true);

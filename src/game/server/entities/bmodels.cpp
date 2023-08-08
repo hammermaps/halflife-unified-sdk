@@ -51,12 +51,34 @@ void CFuncWall::Spawn()
 
 	// If it can't move/go away, it's really part of the world
 	pev->flags |= FL_WORLDBRUSH;
+
+    if (m_iStyle >= 32)
+        LIGHT_STYLE(m_iStyle, "a");
+    else if (m_iStyle <= -32)
+        LIGHT_STYLE(-m_iStyle, "z");
 }
 
 void CFuncWall::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
 	if (ShouldToggle(useType, pev->frame != 0))
-		pev->frame = 1 - pev->frame;
+	{
+	    pev->frame = 1 - pev->frame;
+	    
+	    if (m_iStyle >= 32)
+	    {
+	        if (pev->frame)
+	            LIGHT_STYLE(m_iStyle, "z");
+	        else
+	            LIGHT_STYLE(m_iStyle, "a");
+	    }
+	    else if (m_iStyle <= -32)
+	    {
+	        if (pev->frame)
+	            LIGHT_STYLE(-m_iStyle, "a");
+	        else
+	            LIGHT_STYLE(-m_iStyle, "z");
+	    }
+	}
 }
 
 #define SF_WALL_START_OFF 0x0001

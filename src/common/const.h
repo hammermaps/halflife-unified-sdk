@@ -57,6 +57,27 @@ struct edict_t;
 #define FL_KILLME (1 << 30)		  // This entity is marked for death -- This allows the engine to kill ents at the appropriate time
 #define FL_DORMANT (1 << 31)	  // Entity is dormant, no updates to client
 
+#define FL_NOTEASY (1 << 0)      // Entity is not see in easy difficulty
+#define FL_NOTMEDIUM (1 << 1)    // Entity is not see in medium difficulty
+#define FL_NOTHARD (1 << 2)      // Entity is not see in hard difficulty
+
+#define LF_POSTASSISTVEL (1 << 3)
+#define LF_POSTASSISTAVEL (1 << 4)
+
+#define LF_DOASSIST (1 << 5)
+#define LF_CORRECTSPEED (1 << 6)
+
+#define LF_DODESIRED (1 << 7)
+#define LF_DESIRED_THINK (1 << 8)
+#define LF_DESIRED_POSTASSIST (1 << 9)
+
+#define LF_DESIRED_INFO (1 << 10)
+#define LF_DESIRED_ACTION (1 << 11)
+
+#define LF_ALIASLIST (1 << 12)
+
+// an entity must have one of these flags set in order to be in the AssistList
+#define LF_ASSISTLIST (LF_DOASSIST | LF_DODESIRED)
 
 // Goes into globalvars_t.trace_flags
 #define FTRACE_SIMPLEBOX (1 << 0) // Traceline with a simple box

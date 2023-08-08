@@ -124,6 +124,16 @@ public:
 	 */
 	byte m_EFlags = 0;
 
+    /**
+     * @brief Entity flags for desired movement and sohl compatibility
+     */
+    int m_iLFlags = 0;
+
+    /**
+     * @brief Sets a lightstyle for the entities
+     */
+    int m_iStyle;
+    
 	virtual ~CBaseEntity() {}
 
 	// Common helper functions

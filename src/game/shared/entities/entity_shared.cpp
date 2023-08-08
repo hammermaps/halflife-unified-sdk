@@ -133,6 +133,7 @@ DEFINE_FIELD(classname, FIELD_STRING),
 BEGIN_DATAMAP_NOBASE(CBaseEntity)
 DEFINE_FIELD(m_pGoalEnt, FIELD_CLASSPTR),
 	DEFINE_FIELD(m_EFlags, FIELD_CHARACTER),
+    DEFINE_FIELD(m_iLFlags, FIELD_INTEGER),
 
 	DEFINE_FIELD(m_ClassificationName, FIELD_STRING),
 	DEFINE_FIELD(m_HasCustomClassification, FIELD_BOOLEAN),
@@ -158,6 +159,8 @@ DEFINE_FIELD(m_pGoalEnt, FIELD_CLASSPTR),
 	DEFINE_FIELD(m_CustomHullMax, FIELD_VECTOR),
 	DEFINE_FIELD(m_HasCustomHullMin, FIELD_BOOLEAN),
 	DEFINE_FIELD(m_HasCustomHullMax, FIELD_BOOLEAN),
+
+    DEFINE_FIELD(m_iStyle, FIELD_INTEGER),
 
 	DEFINE_FUNCTION(SUB_Remove),
 	DEFINE_FUNCTION(SUB_StartFadeOut),
@@ -211,6 +214,16 @@ bool CBaseEntity::KeyValue(KeyValueData* pkvd)
 		m_IsUnkillable = atoi(pkvd->szValue) != 0;
 		return true;
 	}
+	else if (FStrEq(pkvd->szKeyName, "skill"))
+	{
+	    m_iLFlags = atoi(pkvd->szValue);
+	    return true;
+	}
+    else if (FStrEq(pkvd->szKeyName, "style"))
+    {
+        m_iStyle = atoi(pkvd->szValue);
+        return true;
+    }
 
 	return false;
 }

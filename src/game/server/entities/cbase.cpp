@@ -45,6 +45,16 @@ int DispatchSpawn(edict_t* pent)
 		{
 			if (g_pGameRules && !g_pGameRules->IsAllowedToSpawn(pEntity))
 				return -1; // return that this entity should be deleted
+		    
+		    if (g_Skill.GetSkillLevel() == SkillLevel::Easy && pEntity->m_iLFlags & FL_NOTEASY)
+		        return -1;
+		    
+		    if (g_Skill.GetSkillLevel() == SkillLevel::Medium && pEntity->m_iLFlags & FL_NOTMEDIUM)
+		        return -1;
+		    
+		    if (g_Skill.GetSkillLevel() == SkillLevel::Hard && pEntity->m_iLFlags & FL_NOTHARD)
+		        return -1;
+		    
 			if ((pEntity->pev->flags & FL_KILLME) != 0)
 				return -1;
 		}

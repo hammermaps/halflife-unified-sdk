@@ -147,6 +147,11 @@ void CBaseCharger::Spawn()
 	SetModel(STRING(pev->model));
 	m_Juice = m_TotalJuice;
 	pev->frame = 0;
+
+    if (m_iStyle >= 32)
+        LIGHT_STYLE(m_iStyle, "a");
+    else if (m_iStyle <= -32)
+        LIGHT_STYLE(-m_iStyle, "z");
 }
 
 void CBaseCharger::Activate()
@@ -240,6 +245,11 @@ void CBaseCharger::Off()
 
 	m_State = State::Off;
 
+    if (m_iStyle >= 32)
+        LIGHT_STYLE(m_iStyle, "z");
+    else if (m_iStyle <= -32)
+        LIGHT_STYLE(-m_iStyle, "a");
+
 	if (0 == m_Juice && m_RechargeDelay != ChargerRechargeDelayNever && m_TotalJuice != 0)
 	{
 		pev->nextthink = pev->ltime + m_RechargeDelay;
@@ -254,6 +264,11 @@ void CBaseCharger::Recharge()
 	m_Juice = m_TotalJuice;
 	pev->frame = 0;
 	SetThink(nullptr);
+    
+    if (m_iStyle >= 32)
+        LIGHT_STYLE(m_iStyle, "a");
+    else if (m_iStyle <= -32)
+        LIGHT_STYLE(-m_iStyle, "z");
 
 	if (m_Juice != 0)
 	{
