@@ -371,7 +371,7 @@ void COFPitWormUp::Spawn()
 	SetThink(&COFPitWormUp::StartupThink);
 	SetTouch(&COFPitWormUp::HitTouch);
 
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 
 	m_vecDesired = {1, 0, 0};
 
@@ -460,12 +460,12 @@ void COFPitWormUp::StartupThink()
 
 	m_flNextRangeTime = gpGlobals->time;
 
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 }
 
 void COFPitWormUp::HuntThink()
 {
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 	DispatchAnimEvents();
 	StudioFrameAdvance();
 
@@ -589,7 +589,7 @@ void COFPitWormUp::HuntThink()
 
 void COFPitWormUp::DyingThink()
 {
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 
 	DispatchAnimEvents();
 	StudioFrameAdvance();
@@ -609,7 +609,7 @@ void COFPitWormUp::DyingThink()
 				pev->deadflag = DEAD_DEAD;
 
 				SetThink(&COFPitWormUp::SUB_Remove);
-				pev->nextthink = gpGlobals->time + 0.1;
+				SetNextThink(0.1f);
 			}
 		}
 	}
@@ -647,7 +647,7 @@ void COFPitWormUp::DyingThink()
 void COFPitWormUp::NullThink()
 {
 	StudioFrameAdvance();
-	pev->nextthink = gpGlobals->time + 0.5;
+    SetNextThink(0.5f);
 }
 
 void COFPitWormUp::HitTouch(CBaseEntity* pOther)
@@ -697,7 +697,7 @@ void COFPitWormUp::CommandUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE
 void COFPitWormUp::StartupUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
 	SetThink(&COFPitWormUp::HuntThink);
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 	SetUse(&COFPitWormUp::CommandUse);
 }
 
@@ -1466,7 +1466,7 @@ bool COFInfoPW::KeyValue(KeyValueData* pkvd)
 void COFInfoPW::Spawn()
 {
 	SetThink(&COFInfoPW::StartNode);
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 }
 
 void COFInfoPW::StartNode()
@@ -1515,7 +1515,7 @@ void COFPitWormGib::Spawn()
 
 	SetSize({-8, -8, -4}, {8, 8, 16});
 
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 	SetThink(&COFPitWormGib::GibFloat);
 }
 
@@ -1539,7 +1539,7 @@ void COFPitWormGib::GibFloat()
 		pev->velocity.z -= 8.0;
 	}
 
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 }
 
 class COFPitWormGibShooter : public CBaseEntity
@@ -1610,7 +1610,7 @@ bool COFPitWormGibShooter::KeyValue(KeyValueData* pkvd)
 void COFPitWormGibShooter::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
 	SetThink(&COFPitWormGibShooter::ShootThink);
-	pev->nextthink = gpGlobals->time;
+    SetNextThink(0.0f);
 }
 
 void COFPitWormGibShooter::Spawn()
@@ -1651,11 +1651,9 @@ COFPitWormGib* COFPitWormGibShooter::CreateGib()
 
 void COFPitWormGibShooter::ShootThink()
 {
-	pev->nextthink = gpGlobals->time + m_flDelay;
+    SetNextThink(m_flDelay);
 
-	Vector vecShootDir;
-
-	vecShootDir = pev->movedir;
+    Vector vecShootDir = pev->movedir;
 
 	vecShootDir = vecShootDir + gpGlobals->v_right * RANDOM_FLOAT(-1, 1) * m_flVariance;
 	;
@@ -1675,7 +1673,7 @@ void COFPitWormGibShooter::ShootThink()
 
 	SetUse(nullptr);
 	SetThink(&COFPitWormGibShooter::SUB_Remove);
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 }
 
 #define bits_MEMORY_ADVANCE_NODE (bits_MEMORY_CUSTOM2)
@@ -2431,7 +2429,7 @@ void COFPitWorm::StrafeBeam()
 void COFPitWorm::StartupUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
 	SetThink(&COFPitWorm::CallMonsterThink);
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 	SetUse(nullptr);
 }
 

@@ -118,8 +118,15 @@ inline bool FStrEq(const char* sz1, const char* sz2)
 CBaseEntity* UTIL_FindEntityInSphere(CBaseEntity* pStartEntity, const Vector& vecCenter, float flRadius);
 CBaseEntity* UTIL_FindEntityByString(CBaseEntity* pStartEntity, const char* szKeyword, const char* szValue);
 CBaseEntity* UTIL_FindEntityByClassname(CBaseEntity* pStartEntity, const char* szName);
+
 CBaseEntity* UTIL_FindEntityByTargetname(CBaseEntity* pStartEntity, const char* szName,
-	CBaseEntity* activator = nullptr, CBaseEntity* caller = nullptr);
+    CBaseEntity* activator = nullptr, CBaseEntity* caller = nullptr);
+CBaseEntity* UTIL_FollowReference(CBaseEntity* pStartEntity, const char* szName,
+    CBaseEntity* activator = nullptr, CBaseEntity* caller = nullptr);
+CBaseEntity* UTIL_FollowGroupReference(CBaseEntity* pStartEntity, char* szGroupName, char* szMemberName,
+    CBaseEntity* activator = nullptr, CBaseEntity* caller = nullptr);
+CBaseEntity* UTIL_FollowAliasReference(CBaseEntity* pStartEntity, const char* szValue,
+    CBaseEntity* activator = nullptr, CBaseEntity* caller = nullptr);
 
 /**
  *	@brief For doing a reverse lookup. Say you have a door, and want to find its button.

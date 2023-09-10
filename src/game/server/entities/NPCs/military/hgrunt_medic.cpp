@@ -711,7 +711,7 @@ void COFMedicAlly::HealOff()
 	ClearSchedule();
 
 	SetThink(nullptr);
-	pev->nextthink = 0;
+    DontThink();
 }
 
 void COFMedicAlly::HealerActivate(CBaseMonster* pTarget)

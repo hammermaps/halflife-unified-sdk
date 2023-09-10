@@ -116,6 +116,11 @@ void CBasePlayerWeapon::Spawn()
 	SetupItem(vec3_origin, vec3_origin); // pointsize until it lands on the ground.
 }
 
+void CBasePlayerWeapon::SetNextThink(float delay)
+{
+    pev->nextthink = UTIL_WeaponTimeBase() + delay;
+}
+
 void CBasePlayerWeapon::LinkWeaponInfo()
 {
 	m_WeaponInfo = g_WeaponData.GetByName(GetClassname());

@@ -1115,7 +1115,7 @@ void CSittingScientist::Spawn()
 	ResetSequenceInfo();
 
 	SetThink(&CSittingScientist::SittingThink);
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 
 	DROP_TO_FLOOR(edict());
 }
@@ -1224,7 +1224,7 @@ void CSittingScientist::SittingThink()
 		pev->frame = 0;
 		SetBoneController(0, m_headTurn);
 	}
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 }
 
 void CSittingScientist::SetAnswerQuestion(CTalkMonster* pSpeaker)

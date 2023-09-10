@@ -76,6 +76,10 @@ void CBaseEntity::EmitSound(int channel, const char* sample, float volume, float
 void CBaseEntity::EmitSoundDyn(int channel, const char* sample, float volume, float attenuation, int flags, int pitch) {}
 void CBaseEntity::StopSound(int channel, const char* sample) {}
 void CBaseEntity::UpdateOnRemove() {}
+void CBaseEntity::Activate() {}
+void CBaseEntity::SetNextThink(float delay, bool correctSpeed) {}
+void CBaseEntity::AbsoluteNextThink(float time, bool correctSpeed) {}
+void CBaseEntity::ThinkCorrection() {}
 
 // CBaseDelay Stubs
 bool CBaseDelay::KeyValue(KeyValueData*) { return false; }

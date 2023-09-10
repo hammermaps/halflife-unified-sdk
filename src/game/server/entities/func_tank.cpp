@@ -70,7 +70,7 @@ public:
 	inline void TankActivate()
 	{
 		pev->spawnflags |= SF_TANK_ACTIVE;
-		pev->nextthink = pev->ltime + 0.1;
+		SetNextThink(0.1f);
 		m_fireLast = 0;
 	}
 	inline void TankDeactivate()
@@ -217,7 +217,7 @@ void CFuncTank::Spawn()
 	m_pitchCenter = pev->angles.x;
 
 	if (IsActive())
-		pev->nextthink = pev->ltime + 1.0;
+	    SetNextThink(1.0f);
 
 	m_sightOrigin = BarrelPosition(); // Point at the end of the barrel
 
@@ -410,7 +410,7 @@ bool CFuncTank::StartControl(CBasePlayer* pController)
 	m_pController->m_iHideHUD |= HIDEHUD_WEAPONS;
 	m_vecControllerUsePos = m_pController->pev->origin;
 
-	pev->nextthink = pev->ltime + 0.1;
+	SetNextThink(0.1f);
 
 	CreateTargetLaser();
 
@@ -432,11 +432,11 @@ void CFuncTank::StopControl()
 	WRITE_BYTE(0);
 	MESSAGE_END();
 
-	pev->nextthink = 0;
+	DontThink();
 	m_pController = nullptr;
 
 	if (IsActive())
-		pev->nextthink = pev->ltime + 1.0;
+	    SetNextThink(1.0f);
 }
 
 void CFuncTank::UpdateOnRemove()
@@ -685,19 +685,20 @@ void CFuncTank::TrackTarget()
 		// Tanks attempt to mirror the player's angles
 		angles = m_pController->pev->v_angle;
 		angles[0] = 0 - angles[0];
-		pev->nextthink = pev->ltime + 0.05;
+	    SetNextThink(0.05f);
 	}
 	else
 	{
 		if (IsActive())
-			pev->nextthink = pev->ltime + 0.1;
+			SetNextThink(0.1f);
 		else
 			return;
 
 		if (!pPlayer)
 		{
 			if (IsActive())
-				pev->nextthink = pev->ltime + 2; // Wait 2 secs
+				SetNextThink(2.0f); // Wait 2 secs
+		    
 			return;
 		}
 
@@ -1079,7 +1080,7 @@ void CFuncTankLaser::Fire(const Vector& barrelEnd, const Vector& forward, CBaseE
 				m_pLaser->TurnOn();
 				m_pLaser->pev->dmgtime = gpGlobals->time - 1.0;
 				m_pLaser->FireAtPoint(tr);
-				m_pLaser->pev->nextthink = 0;
+				m_pLaser->DontThink();
 			}
 			CFuncTank::Fire(barrelEnd, forward, this);
 		}
@@ -1226,7 +1227,7 @@ void CFuncTankControls::Spawn()
 	SetSize(pev->mins, pev->maxs);
 	SetOrigin(pev->origin);
 
-	pev->nextthink = gpGlobals->time + 0.3; // After all the func_tank's have spawned
+	SetNextThink(0.3f); // After all the func_tank's have spawned
 
 	CBaseEntity::Spawn();
 }

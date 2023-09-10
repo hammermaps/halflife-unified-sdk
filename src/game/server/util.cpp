@@ -343,32 +343,35 @@ CBaseEntity* UTIL_FindEntityByClassname(CBaseEntity* pStartEntity, const char* s
 
 CBaseEntity* UTIL_FindEntityByTargetname(CBaseEntity* pStartEntity, const char* szName, CBaseEntity* activator, CBaseEntity* caller)
 {
-	if (szName[0] == '!')
-	{
-		// Target selectors can only return one entity so bow out after the first iteration.
-		if (pStartEntity)
-		{
-			return nullptr;
-		}
+    //SOHL code - search for following references
+    CBaseEntity* pFound = UTIL_FollowReference(pStartEntity, szName, activator, caller);
+    if (pFound) return pFound;
 
-		++szName;
+    //HLU original code - no following references
+    if (szName[0] == '!') {
+        // Target selectors can only return one entity so bow out after the first iteration.
+        if (pStartEntity) {
+            return nullptr;
+        }
 
-		if (FStrEq(szName, "activator"))
-		{
-			return activator;
-		}
-		else if (FStrEq(szName, "caller"))
-		{
-			return caller;
-		}
+        ++szName;
 
-		CBaseEntity::Logger->warn("Invalid target selector \"{}\"", szName);
+        if (FStrEq(szName, "activator"))
+        {
+            return activator;
+        }
+        else if (FStrEq(szName, "caller"))
+        {
+            return caller;
+        }
 
-		return nullptr;
-	}
+        CBaseEntity::Logger->warn("Invalid target selector \"{}\"", szName);
+        return nullptr;
+    }
 
-	return UTIL_FindEntityByAccessor(pStartEntity, szName, [](auto entity)
-		{ return entity->targetname; });
+    return UTIL_FindEntityByAccessor(pStartEntity, szName, [](auto entity) {
+        return entity->targetname;
+    });
 }
 
 CBaseEntity* UTIL_FindEntityByTarget(CBaseEntity* pStartEntity, const char* szName)
@@ -381,7 +384,7 @@ CBaseEntity* UTIL_FindEntityGeneric(const char* szWhatever, Vector& vecSrc, floa
 {
 	CBaseEntity* pEntity = nullptr;
 
-	pEntity = UTIL_FindEntityByTargetname(nullptr, szWhatever);
+	pEntity = UTIL_FindEntityByTargetname(nullptr, szWhatever, nullptr, nullptr);
 	if (pEntity)
 		return pEntity;
 
@@ -425,6 +428,145 @@ CBaseEntity* UTIL_FindEntityByIdentifier(CBaseEntity* startEntity, const char* n
 	}
 
 	return nullptr;
+}
+
+CBaseEntity* UTIL_FollowReference(CBaseEntity* pStartEntity, const char* szName, CBaseEntity* activator, CBaseEntity* caller)
+{
+    char szRoot[MAX_ALIASNAME_LEN + 1]; // allow room for null-terminator
+    CBaseEntity* pResult;
+    
+    if (!szName || szName[0] == 0)
+        return nullptr;
+
+    // reference through an info_group?
+    for (int i = 0; szName[i]; i++)
+    {
+        if (szName[i] == '.')
+        {
+            // yes, it looks like a reference through an info_group...
+            // FIXME: we should probably check that i < MAX_ALIASNAME_LEN.
+            strncpy(szRoot, szName, i);
+            szRoot[i] = 0;
+            char* szMember = const_cast<char*>(&szName[i + 1]);
+            //ALERT(at_console,"Following reference- group %s with member %s\n",szRoot,szMember);
+            pResult = UTIL_FollowGroupReference(pStartEntity, szRoot, szMember,activator,caller);
+            if (pResult) {
+                CBaseEntity::Logger->debug("FollowReference->info_group: \"%s\".\"%s\" = %s\n",
+                szRoot,szMember,STRING(pResult->pev->targetname));
+            }
+            
+            return pResult;
+        }
+    }
+    // reference through an info_alias?
+    if (szName[0] == '*') {
+        if (FStrEq(szName, "*player")) {
+            CBaseEntity* pPlayer = UTIL_FindEntityByClassname(nullptr, "player");
+            if (pPlayer && (pStartEntity == nullptr || pPlayer->eoffset() > pStartEntity->eoffset()))
+                return pPlayer;
+            
+            return nullptr;
+        }
+        
+        CBaseEntity::Logger->debug("Following alias %s\n",szName+1);
+        pResult = UTIL_FollowAliasReference(pStartEntity, szName + 1,activator,caller);
+        if (pResult) {
+            CBaseEntity::Logger->debug("FollowReference->info_alias: \"%s\" = %s\n",
+            szName+1,STRING(pResult->pev->targetname));
+        }
+
+        return pResult;
+    }
+    
+    CBaseEntity::Logger->debug("%s is not a reference\n",szName);
+    return nullptr;
+}
+
+CBaseEntity* UTIL_FollowGroupReference(CBaseEntity* pStartEntity, char* szGroupName, char* szMemberName,CBaseEntity* activator, CBaseEntity* caller)
+{
+    CBaseEntity* pBestEntity = nullptr; // the entity we're currently planning to return.
+	int iBestOffset = -1;			 // the offset of that entity.
+	CBaseEntity* pTempEntity;
+    char szBuf[MAX_ALIASNAME_LEN];
+	char* szThisMember = szMemberName;
+	char* szTail = nullptr;
+
+    // find the first '.' in the membername and if there is one, split the string at that point.
+	for (int i = 0; szMemberName[i]; i++)
+	{
+		if (szMemberName[i] == '.')
+		{
+			// recursive member-reference
+			// FIXME: we should probably check that i < MAX_ALIASNAME_LEN.
+			strncpy(szBuf, szMemberName, i);
+			szBuf[i] = 0;
+			szTail = &(szMemberName[i + 1]);
+			szThisMember = szBuf;
+			break;
+		}
+	}
+
+	CBaseEntity* pEntity = UTIL_FindEntityByTargetname(nullptr, szGroupName, activator, caller);
+	while (pEntity)
+	{
+		if (FStrEq(STRING(pEntity->pev->classname), "info_group"))
+		{
+			string_t iszMemberValue = ((CInfoGroup*)pEntity)->GetMember(szThisMember);
+			if (!FStringNull(iszMemberValue))
+			{
+				if (szTail) // do we have more references to follow?
+					pTempEntity = UTIL_FollowGroupReference(pStartEntity, (char*)STRING(iszMemberValue), szTail, activator, caller);
+				else
+					pTempEntity = UTIL_FindEntityByTargetname(pStartEntity, STRING(iszMemberValue), activator, caller);
+
+				if (pTempEntity)
+				{
+					int iTempOffset = OFFSET(pTempEntity->pev);
+					if (iBestOffset == -1 || iTempOffset < iBestOffset)
+					{
+						iBestOffset = iTempOffset;
+						pBestEntity = pTempEntity;
+					}
+				}
+			}
+		}
+	    
+		pEntity = UTIL_FindEntityByTargetname(pEntity, szGroupName, activator, caller);
+	}
+
+	if (pBestEntity) {
+	    CBaseEntity::Logger->debug("\"%s\".\"%s\" returns %s\n",szGroupName,szMemberName,STRING(pBestEntity->pev->targetname));
+		return pBestEntity;
+	}
+    
+	return nullptr;
+}
+
+CBaseEntity* UTIL_FollowAliasReference(CBaseEntity* pStartEntity, const char* szValue,CBaseEntity* activator, CBaseEntity* caller)
+{
+    CBaseEntity* pBestEntity = nullptr; // the entity we're currently planning to return.
+    int iBestOffset = -1;			 // the offset of that entity.
+
+    CBaseEntity* pEntity = UTIL_FindEntityByTargetname(nullptr, szValue, activator, caller);
+
+    while (pEntity)
+    {
+        //LRC 1.8 - FollowAlias is now in CBaseEntity, no need to cast
+        CBaseEntity* pTempEntity = pEntity->FollowAlias(pStartEntity);
+        if (pTempEntity)
+        {
+            // We've found an entity; only use it if its offset is lower than the offset we've currently got.
+            int iTempOffset = OFFSET(pTempEntity->pev);
+            if (iBestOffset == -1 || iTempOffset < iBestOffset)
+            {
+                iBestOffset = iTempOffset;
+                pBestEntity = pTempEntity;
+            }
+        }
+        pEntity = UTIL_FindEntityByTargetname(pEntity, szValue, activator, caller);
+    }
+
+    return pBestEntity;
 }
 
 // returns a CBaseEntity pointer to a player by index.  Only returns if the player is spawned and connected
@@ -917,7 +1059,7 @@ bool UTIL_IsMasterTriggered(string_t sMaster, CBaseEntity* pActivator)
 {
 	if (!FStringNull(sMaster))
 	{
-		auto master = UTIL_FindEntityByTargetname(nullptr, STRING(sMaster));
+		auto master = UTIL_FindEntityByTargetname(nullptr, STRING(sMaster), nullptr, nullptr);
 
 		if (!FNullEnt(master))
 		{

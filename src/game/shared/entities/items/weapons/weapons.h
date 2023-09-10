@@ -251,6 +251,8 @@ public:
 
 	void Spawn() override;
 
+    void SetNextThink(float delay) override;
+
 	void LinkWeaponInfo();
 
 	/**

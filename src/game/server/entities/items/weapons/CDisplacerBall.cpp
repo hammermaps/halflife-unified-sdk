@@ -107,7 +107,7 @@ void CDisplacerBall::Spawn()
 	SetTouch(&CDisplacerBall::BallTouch);
 	SetThink(&CDisplacerBall::FlyThink);
 
-	pev->nextthink = gpGlobals->time + 0.2;
+	SetNextThink(0.2f);
 
 	InitBeams();
 }
@@ -232,15 +232,14 @@ void CDisplacerBall::BallTouch(CBaseEntity* pOther)
 	SetOrigin(pev->origin);
 
 	SetThink(&CDisplacerBall::KillThink);
-
-	pev->nextthink = gpGlobals->time + (g_pGameRules->IsMultiplayer() ? 0.2 : 0.5);
+	SetNextThink(g_pGameRules->IsMultiplayer() ? 0.2 : 0.5);
 }
 
 void CDisplacerBall::FlyThink()
 {
 	ArmBeam(-1);
 	ArmBeam(1);
-	pev->nextthink = gpGlobals->time + 0.05;
+    SetNextThink(0.05f);
 }
 
 void CDisplacerBall::FlyThink2()
@@ -250,7 +249,7 @@ void CDisplacerBall::FlyThink2()
 	ArmBeam(-1);
 	ArmBeam(1);
 
-	pev->nextthink = gpGlobals->time + 0.05;
+    SetNextThink(0.05f);
 }
 
 void CDisplacerBall::FizzleThink()
@@ -308,7 +307,7 @@ void CDisplacerBall::KillThink()
 	}
 
 	SetThink(&CDisplacerBall::ExplodeThink);
-	pev->nextthink = gpGlobals->time + 0.2;
+	SetNextThink(0.2f);
 }
 
 void CDisplacerBall::InitBeams()

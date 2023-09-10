@@ -222,7 +222,7 @@ void CRope::Spawn()
 
 	InitializeRopeSim();
 
-	pev->nextthink = gpGlobals->time + 0.01;
+    SetNextThink(0.01f);
 }
 
 void CRope::UpdateOnRemove()
@@ -298,7 +298,7 @@ void CRope::Think()
 		Creak();
 	}
 
-	pev->nextthink = gpGlobals->time + (1 / RopeFrameRate);
+    SetNextThink((1 / RopeFrameRate));
 }
 
 void CRope::Touch(CBaseEntity* pOther)

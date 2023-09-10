@@ -436,7 +436,7 @@ CSound* CBaseMonster::PBestScent()
 
 void CBaseMonster::MonsterThink()
 {
-	pev->nextthink = gpGlobals->time + 0.1; // keep monster thinking.
+	SetNextThink(0.1f); // keep monster thinking.
 
 
 	RunAI();
@@ -1819,7 +1819,7 @@ void CBaseMonster::MonsterInit()
 	SetEyePosition();
 
 	SetThink(&CBaseMonster::MonsterInitThink);
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 	// SetUse(&CBaseMonster::MonsterUse);
 
 	if (m_AllowFollow)
@@ -2973,7 +2973,7 @@ void CBaseMonster::CorpseFallThink()
 		SetOrigin(pev->origin); // link into world.
 	}
 	else
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink(0.1f);
 }
 
 void CBaseMonster::MonsterInitDead()
@@ -2997,32 +2997,29 @@ void CBaseMonster::MonsterInitDead()
 	// Setup health counters, etc.
 	BecomeDead();
 	SetThink(&CBaseMonster::CorpseFallThink);
-	pev->nextthink = gpGlobals->time + 0.5;
+    SetNextThink(0.5f);
 }
 
 bool CBaseMonster::BBoxFlat()
 {
 	TraceResult tr;
 	Vector vecPoint;
-	float flXSize, flYSize;
-	float flLength;
-	float flLength2;
 
-	flXSize = pev->size.x / 2;
-	flYSize = pev->size.y / 2;
+    float flXSize = pev->size.x / 2;
+	float flYSize = pev->size.y / 2;
 
 	vecPoint.x = pev->origin.x + flXSize;
 	vecPoint.y = pev->origin.y + flYSize;
 	vecPoint.z = pev->origin.z;
 
 	UTIL_TraceLine(vecPoint, vecPoint - Vector(0, 0, 100), ignore_monsters, edict(), &tr);
-	flLength = (vecPoint - tr.vecEndPos).Length();
+	float flLength = (vecPoint - tr.vecEndPos).Length();
 
 	vecPoint.x = pev->origin.x - flXSize;
 	vecPoint.y = pev->origin.y - flYSize;
 
 	UTIL_TraceLine(vecPoint, vecPoint - Vector(0, 0, 100), ignore_monsters, edict(), &tr);
-	flLength2 = (vecPoint - tr.vecEndPos).Length();
+	float flLength2 = (vecPoint - tr.vecEndPos).Length();
 	if (flLength2 > flLength)
 	{
 		return false;

@@ -274,9 +274,18 @@ void DLLEXPORT IN_ActivateMouse()
 	{
 		IN_SetMouseRelative(true);
 	}
+<<<<<<< Updated upstream
 
 	// Clear out accumulated mouse input from main menu movement.
 	IN_ResetMouse();
+=======
+#else
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+#endif
+
+    // Clear out accumulated mouse input from main menu movement.
+    IN_ResetMouse();
+>>>>>>> Stashed changes
 }
 
 

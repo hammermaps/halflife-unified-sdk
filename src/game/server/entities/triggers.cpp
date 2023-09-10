@@ -152,7 +152,7 @@ void CAutoTrigger::Spawn()
 
 void CAutoTrigger::Precache()
 {
-	pev->nextthink = gpGlobals->time + 0.1;
+    SetNextThink(0.1f);
 }
 
 void CAutoTrigger::Think()
@@ -231,9 +231,6 @@ void CTriggerRelay::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE 
 // Note since this is 0 clones will also clone themselves.
 #define SF_MULTIMAN_CLONE 0x80000000
 #define SF_MULTIMAN_THREAD 0x00000001
-
-constexpr int MAX_MULTI_TARGETS = 64; // maximum number of targets a single multi_manager entity may be assigned.
-
 /**
  *	@brief when fired, will fire up to MAX_MULTI_TARGETS targets at specified times.
  *	@details FLAG: THREAD (create clones when triggered)
@@ -389,7 +386,7 @@ void CMultiManager::ManagerThink()
 		SetUse(&CMultiManager::ManagerUse); // allow manager re-use
 	}
 	else
-		pev->nextthink = m_startTime + m_flTargetDelay[m_index];
+	    AbsoluteNextThink(m_startTime + m_flTargetDelay[m_index]);
 }
 
 CMultiManager* CMultiManager::Clone()
@@ -427,7 +424,7 @@ void CMultiManager::ManagerUse(CBaseEntity* pActivator, CBaseEntity* pCaller, US
 	SetUse(nullptr); // disable use until all targets have fired
 
 	SetThink(&CMultiManager::ManagerThink);
-	pev->nextthink = gpGlobals->time;
+	SetNextThink(0.0f);
 
 	IOLogger->trace("{}:{}:{} started", GetClassname(), entindex(), GetTargetname());
 }
@@ -549,7 +546,7 @@ void CTriggerHurt::Spawn()
 	if ((m_bitsDamageInflict & DMG_RADIATION) != 0)
 	{
 		SetThink(&CTriggerHurt::RadiationThink);
-		pev->nextthink = gpGlobals->time + RANDOM_FLOAT(0.0, 0.5);
+		SetNextThink(RANDOM_FLOAT(0.0, 0.5));
 	}
 
 	if (FBitSet(pev->spawnflags, SF_TRIGGER_HURT_START_OFF)) // if flagged to Start Turned Off, make trigger nonsolid.
@@ -725,7 +722,7 @@ void CTriggerHurt::RadiationThink()
 			player->m_flgeigerRange = flRange;
 	}
 
-	pev->nextthink = gpGlobals->time + 0.25;
+	SetNextThink(0.25f);
 }
 
 class CTriggerMonsterJump : public CBaseTrigger
@@ -754,7 +751,7 @@ void CTriggerMonsterJump::Spawn()
 
 	InitTrigger();
 
-	pev->nextthink = 0;
+	DontThink();
 	pev->speed = 200;
 	m_flHeight = 150;
 
@@ -790,7 +787,7 @@ void CTriggerMonsterJump::Touch(CBaseEntity* pOther)
 	// toss the monster!
 	pOther->pev->velocity = pev->movedir * pev->speed;
 	pOther->pev->velocity.z += m_flHeight;
-	pev->nextthink = gpGlobals->time;
+	SetNextThink(0.0f);
 }
 
 /**
@@ -1340,7 +1337,7 @@ void CTriggerCamera::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE
 
 	// follow the player down
 	SetThink(&CTriggerCamera::FollowTarget);
-	pev->nextthink = gpGlobals->time;
+	SetNextThink(0.0f);
 
 	m_moveDistance = 0;
 	Move();
@@ -1403,7 +1400,7 @@ void CTriggerCamera::FollowTarget()
 			pev->velocity = g_vecZero;
 	}
 
-	pev->nextthink = gpGlobals->time;
+	SetNextThink(0.0f);
 
 	Move();
 }

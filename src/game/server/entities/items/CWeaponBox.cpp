@@ -86,7 +86,7 @@ void CWeaponBox::RemoveWeapons()
 		while (weapon)
 		{
 			weapon->SetThink(&CBasePlayerWeapon::SUB_Remove);
-			weapon->pev->nextthink = gpGlobals->time + 0.1;
+			weapon->SetNextThink(0.1f);
 			weapon = weapon->m_pNext;
 		}
 	}

@@ -134,6 +134,7 @@ DEFINE_FIELD(m_SuitLightType, FIELD_INTEGER),
 	// Save this in the unlikely case where the player spawns and saves and loads
 	// in the split second between spawning and the first update.
 	DEFINE_FIELD(m_FireSpawnTarget, FIELD_BOOLEAN),
+    DEFINE_FIELD(m_flStartCharge, FIELD_TIME),
 
 	DEFINE_FUNCTION(PlayerDeathThink),
 
@@ -674,7 +675,7 @@ void CBasePlayer::PackDeadPlayerItems()
 	pWeaponBox->pev->angles.z = 0;
 
 	pWeaponBox->SetThink(&CWeaponBox::Kill);
-	pWeaponBox->pev->nextthink = gpGlobals->time + 120;
+	pWeaponBox->SetNextThink(120.0f);
 
 	// back these two lists up to their first elements
 	iPA = 0;
@@ -823,7 +824,7 @@ void CBasePlayer::Killed(CBaseEntity* attacker, int iGib)
 	pev->angles.z = 0;
 
 	SetThink(&CBasePlayer::PlayerDeathThink);
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 }
 
 void CBasePlayer::SetAnimation(PLAYER_ANIM playerAnim)
@@ -1238,7 +1239,7 @@ void CBasePlayer::PlayerDeathThink()
 	// Logger->debug("Respawn");
 
 	respawn(this, (m_afPhysicsFlags & PFLAG_OBSERVER) == 0); // don't copy a corpse if we're in deathcam.
-	pev->nextthink = -1;
+	DontThink();
 }
 
 void CBasePlayer::StartDeathCam()
@@ -3050,7 +3051,7 @@ void CSprayCan::Spawn(CBaseEntity* owner)
 	pev->owner = owner->edict();
 	pev->frame = 0;
 
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 	EmitSound(CHAN_VOICE, "player/sprayer.wav", 1, ATTN_NORM);
 }
 
@@ -3081,7 +3082,7 @@ void CSprayCan::Think()
 			UTIL_Remove(this);
 	}
 
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 }
 
 class CBloodSplat : public CBaseEntity
@@ -3100,7 +3101,7 @@ void CBloodSplat::Spawn(CBaseEntity* owner)
 	pev->owner = owner->edict();
 
 	SetThink(&CBloodSplat::Spray);
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 }
 
 void CBloodSplat::Spray()
@@ -3115,7 +3116,7 @@ void CBloodSplat::Spray()
 		UTIL_BloodDecalTrace(&tr, BLOOD_COLOR_RED);
 	}
 	SetThink(&CBloodSplat::SUB_Remove);
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 }
 
 CBaseItem* CBasePlayer::GiveNamedItem(std::string_view className, std::optional<int> defaultAmmo)
@@ -3609,7 +3610,7 @@ bool CBasePlayer::RemovePlayerWeapon(CBasePlayerWeapon* weapon)
 	{
 		ResetAutoaim();
 		weapon->Holster();
-		weapon->pev->nextthink = 0; // crowbar may be trying to swing again, etc.
+		weapon->DontThink(); // crowbar may be trying to swing again, etc.
 		weapon->SetThink(nullptr);
 		m_pActiveWeapon = nullptr;
 		pev->viewmodel = string_t::Null;
@@ -5174,7 +5175,7 @@ void CInfoIntermission::Spawn()
 	pev->effects = EF_NODRAW;
 	pev->v_angle = g_vecZero;
 
-	pev->nextthink = gpGlobals->time + 2; // let targets spawn!
+	SetNextThink(2.0f); // let targets spawn!
 }
 
 void CInfoIntermission::Think()

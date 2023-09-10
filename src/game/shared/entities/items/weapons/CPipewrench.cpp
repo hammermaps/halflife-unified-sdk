@@ -84,7 +84,7 @@ void CPipewrench::PrimaryAttack()
 	{
 #ifndef CLIENT_DLL
 		SetThink(&CPipewrench::SwingAgain);
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink(0.1f);
 #endif
 	}
 }
@@ -293,9 +293,8 @@ bool CPipewrench::Swing(const bool bFirst)
 		m_pPlayer->m_iWeaponVolume = flVol * PIPEWRENCH_WALLHIT_VOLUME;
 
 		SetThink(&CPipewrench::Smack);
-		pev->nextthink = gpGlobals->time + 0.2;
+	    SetNextThink(0.2f);
 #endif
-
 		if (GetSkillFloat("chainsaw_melee") != 0)
 		{
 			m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
@@ -470,7 +469,7 @@ void CPipewrench::WeaponIdle()
 
 			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.2;
 			SetThink(&CPipewrench::BigSwing);
-			pev->nextthink = gpGlobals->time + 0.1;
+			SetNextThink(0.1f);
 		}
 	}
 	else

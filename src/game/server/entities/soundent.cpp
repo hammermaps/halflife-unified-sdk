@@ -60,7 +60,7 @@ void CSoundEnt::Spawn()
 	pev->solid = SOLID_NOT;
 	Initialize();
 
-	pev->nextthink = gpGlobals->time + 1;
+    SetNextThink(1.0f);
 }
 
 void CSoundEnt::Think()
@@ -68,7 +68,7 @@ void CSoundEnt::Think()
 	int iSound;
 	int iPreviousSound;
 
-	pev->nextthink = gpGlobals->time + 0.3; // how often to check the sound list.
+	SetNextThink(0.3f); // how often to check the sound list.
 
 	iPreviousSound = SOUNDLIST_EMPTY;
 	iSound = m_iActiveSound;

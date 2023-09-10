@@ -77,7 +77,7 @@ void CCrowbar::PrimaryAttack()
 	if (!Swing(true))
 	{
 		SetThink(&CCrowbar::SwingAgain);
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink(0.1f);
 	}
 }
 
@@ -254,7 +254,7 @@ bool CCrowbar::Swing(bool fFirst)
 		}
 
 		SetThink(&CCrowbar::Smack);
-		pev->nextthink = gpGlobals->time + 0.2;
+	    SetNextThink(0.2f);
 	}
 	return fDidHit;
 }

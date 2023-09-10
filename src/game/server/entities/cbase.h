@@ -60,6 +60,7 @@ CBaseEntity
 #include "CBaseToggle.h"
 #include "CMultiSource.h"
 #include "CPointEntity.h"
+#include "CInfoGroup.h"
 #include "effects.h"
 #include "player.h"
 #include "soundent.h"

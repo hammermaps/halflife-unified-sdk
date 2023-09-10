@@ -84,7 +84,7 @@ void CGenericItem::Spawn()
 	if (!FStringNull(m_iSequence))
 	{
 		SetThink(&CGenericItem::StartItem);
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink(0.1f);
 
 		sequence = LookupSequence(STRING(m_iSequence));
 
@@ -130,7 +130,7 @@ void CGenericItem::StartItem()
 	ResetSequenceInfo();
 
 	SetThink(&CGenericItem::AnimateThink);
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 	pev->frame = 0;
 }
 
@@ -145,11 +145,11 @@ void CGenericItem::AnimateThink()
 		ResetSequenceInfo();
 	}
 
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 }
 
 void CGenericItem::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
 	SetThink(&CGenericItem::SUB_Remove);
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 }

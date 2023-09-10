@@ -180,7 +180,7 @@ void CEagle::PrimaryAttack()
 	{
 		m_pLaser->pev->effects |= EF_NODRAW;
 		m_pLaser->SetThink(&CEagleLaser::Revive);
-		m_pLaser->pev->nextthink = gpGlobals->time + 0.6;
+		m_pLaser->SetNextThink(0.6f);
 	}
 #endif
 
@@ -262,7 +262,7 @@ void CEagle::Reload()
 	{
 		m_pLaser->pev->effects |= EF_NODRAW;
 		m_pLaser->SetThink(&CEagleLaser::Revive);
-		m_pLaser->pev->nextthink = gpGlobals->time + 1.6;
+		m_pLaser->SetNextThink(1.6f);
 
 		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.5;
 	}

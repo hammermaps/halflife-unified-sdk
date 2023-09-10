@@ -1073,7 +1073,7 @@ void CBMortar::Spawn()
 
 void CBMortar::Animate()
 {
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 
 	if (gpGlobals->time > pev->dmgtime)
 	{
@@ -1099,7 +1099,7 @@ CBMortar* CBMortar::Shoot(CBaseEntity* owner, Vector vecStart, Vector vecVelocit
 	pSpit->SetOwner(owner);
 	pSpit->pev->scale = 2.5;
 	pSpit->SetThink(&CBMortar::Animate);
-	pSpit->pev->nextthink = gpGlobals->time + 0.1;
+	pSpit->SetNextThink(0.1f);
 
 	return pSpit;
 }

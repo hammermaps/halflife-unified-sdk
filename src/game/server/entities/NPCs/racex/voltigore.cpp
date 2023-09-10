@@ -148,7 +148,7 @@ void COFChargedBolt::LaunchChargedBolt(const Vector& vecAim, CBaseEntity* owner,
 	SetTouch(&COFChargedBolt::ChargedBoltTouch);
 	SetThink(&COFChargedBolt::FlyThink);
 
-	pev->nextthink = gpGlobals->time + 0.15;
+    SetNextThink(0.15f);
 }
 
 void COFChargedBolt::SetAttachment(CBaseAnimating* pAttachEnt, int iAttachIdx)
@@ -165,7 +165,7 @@ void COFChargedBolt::SetAttachment(CBaseAnimating* pAttachEnt, int iAttachIdx)
 
 	SetThink(&COFChargedBolt::AttachThink);
 
-	pev->nextthink = gpGlobals->time + 0.05;
+    SetNextThink(0.05f);
 }
 
 void COFChargedBolt::ArmBeam(int side)
@@ -233,14 +233,14 @@ void COFChargedBolt::AttachThink()
 	m_pAttachEnt->GetAttachment(m_iAttachIdx, vecOrigin, vecAngles);
 	SetOrigin(vecOrigin);
 
-	pev->nextthink = gpGlobals->time + 0.05;
+    SetNextThink(0.05f);
 }
 
 void COFChargedBolt::FlyThink()
 {
 	ArmBeam(-1);
 	ArmBeam(1);
-	pev->nextthink = gpGlobals->time + 0.05;
+    SetNextThink(0.05f);
 }
 
 void COFChargedBolt::ChargedBoltTouch(CBaseEntity* pOther)
@@ -275,7 +275,7 @@ void COFChargedBolt::ChargedBoltTouch(CBaseEntity* pOther)
 	RadiusDamage(pev->origin, this, pevOwner, GetSkillFloat("voltigore_dmg_beam"sv), 128.0, DMG_ALWAYSGIB | DMG_SHOCK);
 
 	SetThink(&COFChargedBolt::ShutdownChargedBolt);
-	pev->nextthink = gpGlobals->time + 0.5;
+    SetNextThink(0.5f);
 }
 
 LINK_ENTITY_TO_CLASS(monster_alien_voltigore, COFVoltigore);
@@ -1057,7 +1057,7 @@ void COFVoltigore::CallDeathGibThink()
 
 void COFVoltigore::DeathGibThink()
 {
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 	DispatchAnimEvents(0.1);
 	StudioFrameAdvance(0.0);
 
@@ -1123,7 +1123,7 @@ void COFVoltigore::DeathGibThink()
 			}
 
 			pBeam->SetThink(&CBaseEntity::SUB_Remove);
-			pBeam->pev->nextthink = gpGlobals->time + 0.6;
+			pBeam->SetNextThink(0.6f);
 		}
 
 		ClearMultiDamage();
@@ -1143,7 +1143,7 @@ void COFVoltigore::GibMonster()
 
 	// don't remove players!
 	SetThink(&CBaseMonster::SUB_Remove);
-	pev->nextthink = gpGlobals->time + 0.15;
+    SetNextThink(0.15f);
 
 	/*
 	EmitSound(CHAN_WEAPON, "common/bodysplat.wav", 1, ATTN_NORM);

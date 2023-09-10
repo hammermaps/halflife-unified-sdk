@@ -1485,12 +1485,12 @@ void CTestHull::Spawn(CBaseEntity* masterNode)
 	if (0 != WorldGraph.m_fGraphPresent)
 	{ // graph loaded from disk, so we don't need the test hull
 		SetThink(&CTestHull::SUB_Remove);
-		pev->nextthink = gpGlobals->time;
+		SetNextThink(0.0f);
 	}
 	else
 	{
 		SetThink(&CTestHull::DropDelay);
-		pev->nextthink = gpGlobals->time + 1;
+	    SetNextThink(1.0f);
 	}
 
 	// Make this invisible
@@ -1511,7 +1511,7 @@ void CTestHull::DropDelay()
 
 	SetThink(&CTestHull::CallBuildNodeGraph);
 
-	pev->nextthink = gpGlobals->time + 1;
+    SetNextThink(1.0f);
 }
 
 //=========================================================
@@ -1595,7 +1595,7 @@ void CTestHull::ShowBadNode()
 	UTIL_ParticleEffect(pev->origin + gpGlobals->v_right * 64, g_vecZero, 255, 25);
 	UTIL_ParticleEffect(pev->origin - gpGlobals->v_right * 64, g_vecZero, 255, 25);
 
-	pev->nextthink = gpGlobals->time + 0.1;
+    SetNextThink(0.1f);
 }
 
 void CTestHull::CallBuildNodeGraph()
@@ -1638,7 +1638,7 @@ void CTestHull::BuildNodeGraph()
 	int step;
 
 	SetThink(&CTestHull::SUB_Remove); // no matter what happens, the hull gets rid of itself.
-	pev->nextthink = gpGlobals->time;
+	SetNextThink(0.0f);
 
 	// 	malloc a swollen temporary connection pool that we trim down after we know exactly how many connections there are.
 	pTempPool = (CLink*)calloc(sizeof(CLink), (WorldGraph.m_cNodes * MAX_NODE_INITIAL_LINKS));
@@ -3535,7 +3535,7 @@ void CNodeViewer::Spawn()
 
 	m_iDraw = 0;
 	SetThink(&CNodeViewer::DrawThink);
-	pev->nextthink = gpGlobals->time;
+	SetNextThink(0.0f);
 }
 
 
@@ -3576,7 +3576,7 @@ void CNodeViewer::AddNode(int iFrom, int iTo)
 
 void CNodeViewer::DrawThink()
 {
-	pev->nextthink = gpGlobals->time;
+	SetNextThink(0.0f);
 
 	for (int i = 0; i < 10; i++)
 	{

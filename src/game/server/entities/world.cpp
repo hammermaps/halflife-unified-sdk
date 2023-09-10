@@ -118,7 +118,7 @@ void CDecal::Spawn()
 	{
 		SetThink(&CDecal::StaticDecal);
 		// if there's no targetname, the decal will spray itself on as soon as the world is done spawning.
-		pev->nextthink = gpGlobals->time;
+	    SetNextThink(0.0f);
 	}
 	else
 	{
@@ -152,7 +152,7 @@ void CDecal::TriggerDecal(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYP
 	MESSAGE_END();
 
 	SetThink(&CDecal::SUB_Remove);
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 }
 
 void CDecal::StaticDecal()
@@ -400,7 +400,7 @@ void CWorld::Precache()
 			pEntity->SetThink(&CBaseEntity::SUB_CallUseToggle);
 			pEntity->pev->message = pev->netname;
 			pev->netname = string_t::Null;
-			pEntity->pev->nextthink = gpGlobals->time + 0.3;
+			pEntity->SetNextThink(0.3f);
 			pEntity->pev->spawnflags = SF_MESSAGE_ONCE;
 		}
 	}

@@ -390,7 +390,7 @@ public:
 
 		pev->animtime = gpGlobals->time;
 
-		pev->nextthink = gpGlobals->time + 4;
+	    SetNextThink(4.0f);
 
 		pev->frame = 0;
 		pev->framerate = 1;
@@ -420,7 +420,7 @@ public:
 
 		pev->animtime = gpGlobals->time;
 		pev->frame = 0;
-		pev->nextthink = gpGlobals->time + 0.66;
+	    SetNextThink(0.66f);
 
 		auto vecLaunchDir = pev->angles;
 
@@ -463,7 +463,7 @@ public:
 			pev->sequence = SPOREAMMO_IDLE;
 			pev->animtime = gpGlobals->time;
 			pev->frame = 0;
-			pev->nextthink = gpGlobals->time + 10;
+		    SetNextThink(10.0f);
 			break;
 		}
 
@@ -473,7 +473,7 @@ public:
 			pev->sequence = SPOREAMMO_SPAWNDN;
 			pev->animtime = gpGlobals->time;
 			pev->frame = 0;
-			pev->nextthink = gpGlobals->time + 4;
+		    SetNextThink(4.0f);
 			break;
 		}
 
@@ -497,7 +497,7 @@ public:
 
 			pev->animtime = gpGlobals->time;
 			pev->frame = 0;
-			pev->nextthink = gpGlobals->time + 0.66;
+		    SetNextThink(0.66f);
 		}
 	}
 };

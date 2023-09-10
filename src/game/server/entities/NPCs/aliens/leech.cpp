@@ -392,7 +392,7 @@ void CLeech::DeadThink()
 		}
 	}
 	StudioFrameAdvance();
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 
 	// Apply damage velocity, but keep out of the walls
 	if (pev->velocity.x != 0 || pev->velocity.y != 0)
@@ -517,12 +517,12 @@ void CLeech::SwimThink()
 
 	if (!UTIL_FindClientInPVS(this))
 	{
-		pev->nextthink = gpGlobals->time + RANDOM_FLOAT(1, 1.5);
+	    SetNextThink(RANDOM_FLOAT(1, 1.5));
 		pev->velocity = g_vecZero;
 		return;
 	}
 	else
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink(0.1f);
 
 	UpdateShockEffect();
 

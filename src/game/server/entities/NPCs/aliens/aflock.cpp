@@ -232,7 +232,7 @@ void CFlockingFlyerFlock::SpawnFlock()
 		pBoid->pev->angles = pev->angles;
 
 		pBoid->pev->frame = 0;
-		pBoid->pev->nextthink = gpGlobals->time + 0.2;
+	    pBoid->SetNextThink(0.2f);
 		pBoid->SetThink(&CFlockingFlyer::IdleThink);
 
 		if (pBoid != pLeader)
@@ -248,7 +248,7 @@ void CFlockingFlyer::Spawn()
 	SpawnCommonCode();
 
 	pev->frame = 0;
-	pev->nextthink = gpGlobals->time + 0.1;
+    SetNextThink(0.1f);
 	SetThink(&CFlockingFlyer::IdleThink);
 }
 
@@ -315,7 +315,7 @@ void CFlockingFlyer::Killed(CBaseEntity* attacker, int iGib)
 	ClearShockEffect();
 
 	SetThink(&CFlockingFlyer::FallHack);
-	pev->nextthink = gpGlobals->time + 0.1;
+    SetNextThink(0.1f);
 }
 
 void CFlockingFlyer::FallHack()
@@ -325,7 +325,7 @@ void CFlockingFlyer::FallHack()
 		if (auto groundEntity = GetGroundEntity(); !groundEntity || !groundEntity->ClassnameIs("worldspawn"))
 		{
 			pev->flags &= ~FL_ONGROUND;
-			pev->nextthink = gpGlobals->time + 0.1;
+			SetNextThink(0.1f);
 		}
 		else
 		{
@@ -379,19 +379,19 @@ void CFlockingFlyer::BoidAdvanceFrame()
 
 void CFlockingFlyer::IdleThink()
 {
-	pev->nextthink = gpGlobals->time + 0.2;
+    SetNextThink(0.2f);
 
 	// see if there's a client in the same pvs as the monster
 	if (!UTIL_FindClientInPVS(this))
 	{
 		SetThink(&CFlockingFlyer::Start);
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink(0.1f);
 	}
 }
 
 void CFlockingFlyer::Start()
 {
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 
 	if (IsLeader())
 	{
@@ -451,7 +451,7 @@ void CFlockingFlyer::FormFlock()
 	}
 
 	SetThink(&CFlockingFlyer::IdleThink); // now that flock is formed, go to idle and wait for a player to come along.
-	pev->nextthink = gpGlobals->time;
+    SetNextThink(0.0f);
 }
 
 void CFlockingFlyer::SpreadFlock()
@@ -555,7 +555,7 @@ void CFlockingFlyer::FlockLeaderThink()
 	float flLeftSide;
 	float flRightSide;
 
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 
 	UTIL_MakeVectors(pev->angles);
 
@@ -654,7 +654,7 @@ void CFlockingFlyer::FlockFollowerThink()
 	Vector vecDirToLeader;
 	float flDistToLeader;
 
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 
 	if (IsLeader() || !InSquad())
 	{

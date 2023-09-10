@@ -99,6 +99,8 @@ target_sources(server PRIVATE
 	entities/CCorpse.h
 	entities/changelevel.cpp
 	entities/changelevel.h
+	entities/CInfoGroup.cpp
+	entities/CInfoGroup.h
 	entities/CMultiSource.h
 	entities/CPointEntity.h
 	entities/CTriggerChangeKeyValue.cpp

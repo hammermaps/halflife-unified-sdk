@@ -63,7 +63,7 @@ void CShower::Spawn()
 		pev->velocity.z -= 200;
 	pev->movetype = MOVETYPE_BOUNCE;
 	pev->gravity = 0.5;
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 	pev->solid = SOLID_NOT;
 	SetModel(STRING(pev->model));
 	SetSize(g_vecZero, g_vecZero);
@@ -79,7 +79,7 @@ void CShower::Think()
 
 	pev->speed -= 0.1;
 	if (pev->speed > 0)
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink(0.1f);
 	else
 		UTIL_Remove(this);
 	pev->flags &= ~FL_ONGROUND;
@@ -209,7 +209,7 @@ void CEnvExplosion::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE 
 	}
 
 	SetThink(&CEnvExplosion::Smoke);
-	pev->nextthink = gpGlobals->time + 0.3;
+	SetNextThink(0.3f);
 
 	// draw sparks
 	if ((pev->spawnflags & SF_ENVEXPLOSION_NOSPARKS) == 0)

@@ -233,7 +233,7 @@ void DispatchSave(edict_t* pent, SAVERESTOREDATA* pSaveData)
 		{
 			float delta = pEntity->pev->nextthink - pEntity->pev->ltime;
 			pEntity->pev->ltime = gpGlobals->time;
-			pEntity->pev->nextthink = pEntity->pev->ltime + delta;
+			pEntity->AbsoluteNextThink(pEntity->pev->ltime + delta);
 		}
 
 		pTable->location = pSaveData->size;			 // Remember entity position for file I/O
@@ -644,6 +644,64 @@ void CBaseEntity::SetModel(const char* s)
 	}
 }
 
+void CBaseEntity::Activate()
+{
+    //Rebuild the new assistlist as the game starts
+    if (m_iLFlags & LF_ASSISTLIST)
+    {
+
+    }
+
+    //Rebuild the new aliaslist as the game starts
+    if (m_iLFlags & LF_ALIASLIST)
+    {
+
+    }
+
+    if (m_activated) {
+        return;
+    }
+
+    m_activated = true;
+    
+}
+
+auto CBaseEntity::DontThink() -> void
+{
+    pev->nextthink = 0;
+}
+
+// PUSH entities won't have their velocity applied unless they're thinking.
+// make them do so for the foreseeable future.
+void CBaseEntity::SetEternalThink() {
+	if (pev->movetype == MOVETYPE_PUSH) {
+		pev->nextthink = pev->ltime + 1E6F;
+	}
+}
+
+// MoveWith entities have to be able to think independently of moving.
+// This is how we do so.
+void CBaseEntity::SetNextThink(float delay, bool correctSpeed) {
+    // set nextthink as normal.
+    if (pev->movetype == MOVETYPE_PUSH) {
+        pev->nextthink = pev->ltime + delay;
+    } else {
+        pev->nextthink = gpGlobals->time + delay;
+    }
+}
+
+void CBaseEntity::AbsoluteNextThink(float time, bool correctSpeed) {
+    pev->nextthink = time;
+}
+
+// Check in case the engine has changed our nextthink. (which it does
+// on a depressingly frequent basis.)
+// for some reason, this doesn't always produce perfect movement - but it's close
+// enough for government work. (the player doesn't get stuck, at least.)
+void CBaseEntity::ThinkCorrection()
+{
+}
+
 int CBaseEntity::PrecacheSound(const char* s)
 {
 	if (s[0] == '*')
@@ -811,7 +869,7 @@ void CBaseEntity::MakeDormant()
 	// Don't draw
 	SetBits(pev->effects, EF_NODRAW);
 	// Don't think
-	pev->nextthink = 0;
+	DontThink();
 	// Relink
 	SetOrigin(pev->origin);
 }

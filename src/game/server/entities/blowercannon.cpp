@@ -106,7 +106,7 @@ void CBlowerCannon::Spawn()
 	SetThink(nullptr);
 	SetUse(&CBlowerCannon::BlowerCannonStart);
 
-	pev->nextthink = gpGlobals->time + 0.1;
+    SetNextThink(0.1f);
 
 	if (m_flDelay < 0)
 	{
@@ -120,8 +120,7 @@ void CBlowerCannon::BlowerCannonStart(CBaseEntity* pActivator, CBaseEntity* pCal
 {
 	SetUse(&CBlowerCannon::BlowerCannonStop);
 	SetThink(&CBlowerCannon::BlowerCannonThink);
-
-	pev->nextthink = gpGlobals->time + m_flDelay;
+    SetNextThink(m_flDelay);
 }
 
 void CBlowerCannon::BlowerCannonStop(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
@@ -168,6 +167,6 @@ void CBlowerCannon::BlowerCannonThink()
 		SetUse(&CBlowerCannon::BlowerCannonStart);
 		SetThink(nullptr);
 	}
-
-	pev->nextthink = gpGlobals->time + m_flDelay;
+    
+    SetNextThink(m_flDelay);
 }

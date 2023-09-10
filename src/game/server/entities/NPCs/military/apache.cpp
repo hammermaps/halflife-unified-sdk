@@ -88,8 +88,8 @@ void CApache::Spawn()
 		SetThink(&CApache::HuntThink);
 		SetTouch(&CApache::FlyTouch);
 	}
-
-	pev->nextthink = gpGlobals->time + 1.0;
+    
+    SetNextThink(1.0f);
 
 	m_iRockets = 10;
 }
@@ -121,14 +121,14 @@ void CApache::NullThink()
 {
 	StudioFrameAdvance();
 	FCheckAITrigger();
-	pev->nextthink = gpGlobals->time + 0.5;
+    SetNextThink(0.5f);
 }
 
 void CApache::StartupUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
 	SetThink(&CApache::HuntThink);
 	SetTouch(&CApache::FlyTouch);
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 	SetUse(nullptr);
 }
 
@@ -144,7 +144,7 @@ void CApache::Killed(CBaseEntity* attacker, int iGib)
 	SetSize(Vector(-32, -32, -64), Vector(32, 32, 0));
 	SetThink(&CApache::DyingThink);
 	SetTouch(&CApache::CrashTouch);
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 	pev->health = 0;
 	pev->takedamage = DAMAGE_NO;
 	pev->deadflag = DEAD_DYING;
@@ -162,7 +162,7 @@ void CApache::Killed(CBaseEntity* attacker, int iGib)
 void CApache::DyingThink()
 {
 	StudioFrameAdvance();
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 
 	pev->avelocity = pev->avelocity * 1.02;
 
@@ -232,7 +232,7 @@ void CApache::DyingThink()
 
 		// don't stop it we touch a entity
 		pev->flags &= ~FL_ONGROUND;
-		pev->nextthink = gpGlobals->time + 0.2;
+	    SetNextThink(0.2f);
 		return;
 	}
 	else
@@ -343,7 +343,7 @@ void CApache::DyingThink()
 		MESSAGE_END();
 
 		SetThink(&CApache::SUB_Remove);
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink(0.1f);
 	}
 }
 
@@ -366,7 +366,7 @@ void CApache::CrashTouch(CBaseEntity* pOther)
 	{
 		SetTouch(nullptr);
 		m_flNextRocket = gpGlobals->time;
-		pev->nextthink = gpGlobals->time;
+	    SetNextThink(0.0f);
 	}
 }
 
@@ -378,7 +378,7 @@ void CApache::GibMonster()
 void CApache::HuntThink()
 {
 	StudioFrameAdvance();
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 
 	UpdateShockEffect();
 
@@ -951,7 +951,7 @@ void CApacheHVR::Spawn()
 	m_vecForward = gpGlobals->v_forward;
 	pev->gravity = 0.5;
 
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 
 	pev->dmg = 150;
 }
@@ -990,7 +990,7 @@ void CApacheHVR::IgniteThink()
 
 	// set to accelerate
 	SetThink(&CApacheHVR::AccelerateThink);
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 }
 
 void CApacheHVR::AccelerateThink()
@@ -1012,5 +1012,5 @@ void CApacheHVR::AccelerateThink()
 	// re-aim
 	pev->angles = UTIL_VecToAngles(pev->velocity);
 
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 }

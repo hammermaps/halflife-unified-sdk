@@ -79,6 +79,8 @@ struct edict_t;
 // an entity must have one of these flags set in order to be in the AssistList
 #define LF_ASSISTLIST (LF_DOASSIST | LF_DODESIRED)
 
+#define MAX_ALIASNAME_LEN 80
+
 // Goes into globalvars_t.trace_flags
 #define FTRACE_SIMPLEBOX (1 << 0) // Traceline with a simple box
 

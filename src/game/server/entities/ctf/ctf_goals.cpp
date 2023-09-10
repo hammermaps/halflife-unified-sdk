@@ -73,7 +73,7 @@ void CTFGoal::Spawn()
 	SetOrigin(pev->origin);
 
 	SetThink(&CTFGoal::PlaceGoal);
-	pev->nextthink = gpGlobals->time + 0.2;
+	SetNextThink(0.2f);
 }
 
 void CTFGoal::SetObjectCollisionBox()
@@ -114,7 +114,7 @@ void CTFGoal::SetObjectCollisionBox()
 void CTFGoal::StartGoal()
 {
 	SetThink(&CTFGoal::PlaceGoal);
-	pev->nextthink = gpGlobals->time + 0.2;
+	SetNextThink(0.2f);
 }
 
 void CTFGoal::PlaceGoal()
@@ -159,7 +159,7 @@ void CTFGoalBase::BaseThink()
 	g_engfuncs.pfnWriteByte(255);
 	g_engfuncs.pfnWriteCoord(0);
 	g_engfuncs.pfnMessageEnd();
-	pev->nextthink = gpGlobals->time + 20.0;
+	SetNextThink(20.0f);
 }
 
 void CTFGoalBase::Spawn()
@@ -201,7 +201,7 @@ void CTFGoalBase::Spawn()
 		}
 
 		SetThink(&CTFGoalBase::BaseThink);
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink(0.1f);
 	}
 }
 
@@ -290,7 +290,7 @@ void CTFGoalFlag::ReturnFlag()
 	SetTouch(nullptr);
 	SetThink(nullptr);
 
-	pev->nextthink = gpGlobals->time;
+    SetNextThink(0.0f);
 
 	m_iGoalState = 1;
 	pev->solid = SOLID_TRIGGER;
@@ -315,7 +315,7 @@ void CTFGoalFlag::ReturnFlag()
 
 	SetThink(&CTFGoalFlag::ReturnFlagThink);
 
-	pev->nextthink = gpGlobals->time + 0.25;
+    SetNextThink(0.25f);
 
 	for (auto entity : UTIL_FindEntitiesByClassname<CTFGoalBase>("item_ctfbase"))
 	{
@@ -386,7 +386,7 @@ void CTFGoalFlag::FlagCarryThink()
 				ClientPrint(owner, HUD_PRINTCENTER, "#CTFPickUpFlagG");
 			}
 
-			pev->nextthink = gpGlobals->time + 20.0;
+			SetNextThink(20.0f);
 		}
 		else
 		{
@@ -414,8 +414,7 @@ void CTFGoalFlag::goal_item_dropthink()
 	else
 	{
 		SetThink(&CTFGoalFlag::ReturnFlag);
-
-		pev->nextthink = gpGlobals->time + std::max(0.f, g_flFlagReturnTime - 5);
+		SetNextThink(std::max(0.f, g_flFlagReturnTime - 5));
 	}
 }
 
@@ -473,7 +472,7 @@ void CTFGoalFlag::Spawn()
 			SetTouch(&CTFGoalFlag::goal_item_touch);
 			SetThink(&CTFGoalFlag::PlaceItem);
 
-			pev->nextthink = gpGlobals->time + 0.2;
+			SetNextThink(0.2f);
 		}
 	}
 	else
@@ -506,7 +505,7 @@ void CTFGoalFlag::ReturnFlagThink()
 void CTFGoalFlag::StartItem()
 {
 	SetThink(&CTFGoalFlag::PlaceItem);
-	pev->nextthink = gpGlobals->time + 0.2;
+	SetNextThink(0.2f);
 }
 
 void CTFGoalFlag::ScoreFlagTouch(CBasePlayer* pPlayer)
@@ -734,7 +733,7 @@ void CTFGoalFlag::GiveFlagToPlayer(CBasePlayer* pPlayer)
 	SetTouch(nullptr);
 	SetThink(nullptr);
 
-	pev->nextthink = gpGlobals->time;
+    SetNextThink(0.0f);
 	pev->owner = pPlayer->edict();
 	pev->movetype = MOVETYPE_FOLLOW;
 	pev->aiment = pPlayer->edict();
@@ -767,7 +766,7 @@ void CTFGoalFlag::GiveFlagToPlayer(CBasePlayer* pPlayer)
 	ScoreFlagTouch(pPlayer);
 
 	SetThink(&CTFGoalFlag::FlagCarryThink);
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 
 	++pPlayer->m_iCTFScore;
 	++pPlayer->m_iOffense;
@@ -888,7 +887,7 @@ void CTFGoalFlag::SetDropTouch()
 {
 	SetTouch(&CTFGoalFlag::goal_item_touch);
 	SetThink(&CTFGoalFlag::goal_item_dropthink);
-	pev->nextthink = gpGlobals->time + 4.5;
+    SetNextThink(4.5f);
 }
 
 void CTFGoalFlag::DoDrop(const Vector& vecOrigin)
@@ -908,7 +907,7 @@ void CTFGoalFlag::DoDrop(const Vector& vecOrigin)
 
 	SetTouch(&CTFGoalFlag::goal_item_touch);
 	SetThink(&CTFGoalFlag::goal_item_dropthink);
-	pev->nextthink = gpGlobals->time + 5.0;
+    SetNextThink(5.0f);
 }
 
 void CTFGoalFlag::DropFlag(CBasePlayer* pPlayer)

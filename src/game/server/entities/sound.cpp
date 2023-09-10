@@ -195,7 +195,7 @@ void CAmbientGeneric::Spawn()
 	if (FStringNull(pev->message) || strlen(szSoundFile) < 1)
 	{
 		Logger->error("EMPTY AMBIENT AT: {}", pev->origin);
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink(0.1f);
 		SetThink(&CAmbientGeneric::SUB_Remove);
 		return;
 	}
@@ -207,7 +207,7 @@ void CAmbientGeneric::Spawn()
 	// start thinking yet.
 
 	SetThink(&CAmbientGeneric::RampThink);
-	pev->nextthink = 0;
+	DontThink();
 
 	// allow on/off switching via 'use' function.
 
@@ -245,7 +245,7 @@ void CAmbientGeneric::Precache()
 		EmitAmbientSound(pev->origin, szSoundFile,
 			(m_dpv.vol * 0.01), m_flAttenuation, SND_SPAWNING, m_dpv.pitch);
 
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink(0.1f);
 	}
 }
 
@@ -442,7 +442,7 @@ void CAmbientGeneric::RampThink()
 	}
 
 	// update ramps at 5hz
-	pev->nextthink = gpGlobals->time + 0.2;
+	SetNextThink(0.2f);
 	return;
 }
 
@@ -584,7 +584,7 @@ void CAmbientGeneric::ToggleUse(CBaseEntity* pActivator, CBaseEntity* pCaller, U
 				if (m_dpv.pitchrun > 255)
 					m_dpv.pitchrun = 255;
 
-				pev->nextthink = gpGlobals->time + 0.1;
+				SetNextThink(0.1f);
 			}
 		}
 		else
@@ -602,7 +602,7 @@ void CAmbientGeneric::ToggleUse(CBaseEntity* pActivator, CBaseEntity* pCaller, U
 
 				m_dpv.fadeout = m_dpv.fadeoutsav;
 				m_dpv.fadein = 0;
-				pev->nextthink = gpGlobals->time + 0.1;
+				SetNextThink(0.1f);
 			}
 			else
 				EmitAmbientSound(pev->origin, szSoundFile,
@@ -631,7 +631,7 @@ void CAmbientGeneric::ToggleUse(CBaseEntity* pActivator, CBaseEntity* pCaller, U
 		EmitAmbientSound(pev->origin, szSoundFile,
 			(m_dpv.vol * 0.01), m_flAttenuation, 0, m_dpv.pitch);
 
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink(0.1f);
 	}
 }
 
@@ -940,7 +940,7 @@ void CAmbientMusic::Spawn()
 		if (m_Radius > 0)
 		{
 			SetThink(&CAmbientMusic::RadiusThink);
-			pev->nextthink = gpGlobals->time + 1.0;
+			SetNextThink(1.0f);
 		}
 	}
 	else
@@ -1019,7 +1019,7 @@ void CAmbientMusic::RadiusThink()
 	}
 	else
 	{
-		pev->nextthink = gpGlobals->time + 0.5;
+		SetNextThink(0.5f);
 	}
 }
 
@@ -1186,13 +1186,13 @@ void CEnvSound::Think()
 		return true;
 	}();
 
-	pev->nextthink = gpGlobals->time + (shouldThinkFast ? 0.25 : 0.75);
+	SetNextThink(shouldThinkFast ? 0.25 : 0.75);
 }
 
 void CEnvSound::Spawn()
 {
 	// spread think times
-	pev->nextthink = gpGlobals->time + RANDOM_FLOAT(0.0, 0.5);
+	SetNextThink(RANDOM_FLOAT(0.0, 0.5));
 }
 
 // ===================== MATERIAL TYPE DETECTION, MAIN ROUTINES ========================
@@ -1420,7 +1420,7 @@ void CSpeaker::Spawn()
 	if (0 == m_preset && (FStringNull(pev->message) || strlen(szSoundFile) < 1))
 	{
 		Logger->error("SPEAKER with no Level/Sentence! at: {}", pev->origin);
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink(0.1f);
 		SetThink(&CSpeaker::SUB_Remove);
 		return;
 	}
@@ -1429,7 +1429,7 @@ void CSpeaker::Spawn()
 
 
 	SetThink(&CSpeaker::SpeakerThink);
-	pev->nextthink = 0.0;
+	DontThink();
 
 	// allow on/off switching via 'use' function.
 
@@ -1445,7 +1445,7 @@ void CSpeaker::Precache()
 {
 	if (!FBitSet(pev->spawnflags, SPEAKER_START_SILENT))
 		// set first announcement time for random n second
-		pev->nextthink = gpGlobals->time + RANDOM_FLOAT(5.0, 15.0);
+		SetNextThink(RANDOM_FLOAT(5.0, 15.0));
 }
 
 void CSpeaker::SpeakerThink()
@@ -1459,7 +1459,7 @@ void CSpeaker::SpeakerThink()
 	// Wait for the talkmonster to finish first.
 	if (gpGlobals->time <= CTalkMonster::g_talkWaitTime)
 	{
-		pev->nextthink = CTalkMonster::g_talkWaitTime + RANDOM_FLOAT(5, 10);
+		AbsoluteNextThink(CTalkMonster::g_talkWaitTime + RANDOM_FLOAT(5, 10));
 		return;
 	}
 
@@ -1492,7 +1492,7 @@ void CSpeaker::SpeakerThink()
 			flvolume, flattenuation, flags, pitch);
 
 		// shut off and reset
-		pev->nextthink = 0.0;
+		DontThink();
 	}
 	else
 	{
@@ -1502,8 +1502,7 @@ void CSpeaker::SpeakerThink()
 			Logger->debug("Level Design Error!: SPEAKER has bad sentence group name: {}", szSoundFile);
 
 		// set next announcement time for random 5 to 10 minute delay
-		pev->nextthink = gpGlobals->time +
-						 RANDOM_FLOAT(ANNOUNCE_MINUTES_MIN * 60.0, ANNOUNCE_MINUTES_MAX * 60.0);
+		SetNextThink(RANDOM_FLOAT(ANNOUNCE_MINUTES_MIN * 60.0, ANNOUNCE_MINUTES_MAX * 60.0));
 
 		CTalkMonster::g_talkWaitTime = gpGlobals->time + 5; // time delay until it's ok to speak: used so that two NPCs don't talk at once
 	}
@@ -1528,14 +1527,14 @@ void CSpeaker::ToggleUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE
 	if (useType == USE_ON)
 	{
 		// turn on announcements
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink(0.1f);
 		return;
 	}
 
 	if (useType == USE_OFF)
 	{
 		// turn off announcements
-		pev->nextthink = 0.0;
+		DontThink();
 		return;
 	}
 
@@ -1545,12 +1544,12 @@ void CSpeaker::ToggleUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE
 	if (fActive)
 	{
 		// turn off announcements
-		pev->nextthink = 0.0;
+		DontThink();
 	}
 	else
 	{
 		// turn on announcements
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink(0.1f);
 	}
 }
 

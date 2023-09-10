@@ -79,7 +79,7 @@ void CSquidSpit::Spawn()
 
 void CSquidSpit::Animate()
 {
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 
 	if (0 != pev->frame++)
 	{
@@ -100,7 +100,7 @@ void CSquidSpit::Shoot(CBaseEntity* owner, Vector vecStart, Vector vecVelocity)
 	pSpit->pev->owner = owner->edict();
 
 	pSpit->SetThink(&CSquidSpit::Animate);
-	pSpit->pev->nextthink = gpGlobals->time + 0.1;
+	pSpit->SetNextThink(0.1f);
 }
 
 void CSquidSpit::Touch(CBaseEntity* pOther)
@@ -151,7 +151,7 @@ void CSquidSpit::Touch(CBaseEntity* pOther)
 	}
 
 	SetThink(&CSquidSpit::SUB_Remove);
-	pev->nextthink = gpGlobals->time;
+    SetNextThink(0.0f);
 }
 
 #define BSQUID_AE_SPIT (1)

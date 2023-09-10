@@ -114,12 +114,12 @@ void COFGonomeGuts::Touch(CBaseEntity* pOther)
 	}
 
 	SetThink(&COFGonomeGuts::SUB_Remove);
-	pev->nextthink = gpGlobals->time;
+    SetNextThink(0.0f);
 }
 
 void COFGonomeGuts::Animate()
 {
-	pev->nextthink = gpGlobals->time + 0.1;
+    SetNextThink(0.1f);
 
 	if (0 != pev->frame++)
 	{
@@ -142,7 +142,7 @@ void COFGonomeGuts::Shoot(CBaseEntity* owner, Vector vecStart, Vector vecVelocit
 	if (pGuts->m_maxFrame > 0)
 	{
 		pGuts->SetThink(&COFGonomeGuts::Animate);
-		pGuts->pev->nextthink = gpGlobals->time + 0.1;
+		pGuts->SetNextThink(0.1f);
 	}
 }
 
@@ -163,7 +163,7 @@ void COFGonomeGuts::Launch(CBaseEntity* owner, Vector vecStart, Vector vecVeloci
 	pev->owner = owner->edict();
 
 	SetThink(&COFGonomeGuts::Animate);
-	pev->nextthink = gpGlobals->time + 0.1;
+SetNextThink(0.1f);
 }
 
 enum

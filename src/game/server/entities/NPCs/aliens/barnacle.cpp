@@ -114,7 +114,7 @@ void CBarnacle::Spawn()
 	SetActivity(ACT_IDLE);
 
 	SetThink(&CBarnacle::BarnacleThink);
-	pev->nextthink = gpGlobals->time + 0.5;
+    SetNextThink(0.5f);
 
 	SetOrigin(pev->origin);
 }
@@ -135,7 +135,7 @@ void CBarnacle::BarnacleThink()
 	CBaseMonster* pVictim;
 	float flLength;
 
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 
 	UpdateShockEffect();
 
@@ -237,7 +237,7 @@ void CBarnacle::BarnacleThink()
 
 		// If idle and no nearby client, don't think so often
 		if (!UTIL_FindClientInPVS(this))
-			pev->nextthink = gpGlobals->time + RANDOM_FLOAT(1, 1.5); // Stagger a bit to keep barnacles from thinking on the same frame
+		    SetNextThink(RANDOM_FLOAT(1, 1.5)); // Stagger a bit to keep barnacles from thinking on the same frame
 
 		if (m_fSequenceFinished)
 		{ // this is done so barnacle will fidget.
@@ -353,13 +353,13 @@ void CBarnacle::Killed(CBaseEntity* attacker, int iGib)
 
 	StudioFrameAdvance(0.1);
 
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 	SetThink(&CBarnacle::WaitTillDead);
 }
 
 void CBarnacle::WaitTillDead()
 {
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 
 	float flInterval = StudioFrameAdvance(0.1);
 	DispatchAnimEvents(flInterval);

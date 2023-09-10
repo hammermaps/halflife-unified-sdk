@@ -71,7 +71,7 @@ void CCrossbowBolt::Spawn()
 
 	SetTouch(&CCrossbowBolt::BoltTouch);
 	SetThink(&CCrossbowBolt::BubbleThink);
-	pev->nextthink = gpGlobals->time + 0.2;
+    SetNextThink(0.2f);
 }
 
 void CCrossbowBolt::Precache()
@@ -131,7 +131,7 @@ void CCrossbowBolt::BoltTouch(CBaseEntity* pOther)
 		EmitSoundDyn(CHAN_BODY, "weapons/xbow_hit1.wav", RANDOM_FLOAT(0.95, 1.0), ATTN_NORM, 0, 98 + RANDOM_LONG(0, 7));
 
 		SetThink(&CCrossbowBolt::SUB_Remove);
-		pev->nextthink = gpGlobals->time; // this will get changed below if the bolt is allowed to stick in what it hit.
+		SetNextThink(0.0f); // this will get changed below if the bolt is allowed to stick in what it hit.
 
 		if (pOther->ClassnameIs("worldspawn"))
 		{
@@ -144,7 +144,7 @@ void CCrossbowBolt::BoltTouch(CBaseEntity* pOther)
 			pev->velocity = Vector(0, 0, 0);
 			pev->avelocity.z = 0;
 			pev->angles.z = RANDOM_LONG(0, 360);
-			pev->nextthink = gpGlobals->time + 10.0;
+		    SetNextThink(10.0f);
 		}
 
 		if (UTIL_PointContents(pev->origin) != CONTENTS_WATER)
@@ -156,13 +156,13 @@ void CCrossbowBolt::BoltTouch(CBaseEntity* pOther)
 	if (g_Skill.GetValue("crossbow_explosive_bolt") != 0)
 	{
 		SetThink(&CCrossbowBolt::ExplodeThink);
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink(0.1f);
 	}
 }
 
 void CCrossbowBolt::BubbleThink()
 {
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 
 	if (pev->waterlevel == WaterLevel::Dry)
 		return;
@@ -393,7 +393,7 @@ void CCrossbow::SecondaryAttack()
 		m_pPlayer->m_iFOV = 20;
 	}
 
-	pev->nextthink = UTIL_WeaponTimeBase() + 0.1;
+    SetNextThink(0.1f);
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.0;
 }
 

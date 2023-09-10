@@ -70,7 +70,7 @@ void CFireAndDie::Spawn()
 void CFireAndDie::Precache()
 {
 	// This gets called on restore
-	pev->nextthink = gpGlobals->time + m_flDelay;
+	SetNextThink(m_flDelay);
 }
 
 void CFireAndDie::Think()
@@ -638,7 +638,7 @@ bool CRevertSaved::KeyValue(KeyValueData* pkvd)
 void CRevertSaved::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
 	UTIL_ScreenFadeAll(pev->rendercolor, Duration(), HoldTime(), pev->renderamt, FFADE_OUT);
-	pev->nextthink = gpGlobals->time + MessageTime();
+	SetNextThink(MessageTime());
 	SetThink(&CRevertSaved::MessageThink);
 }
 
@@ -648,7 +648,7 @@ void CRevertSaved::MessageThink()
 	float nextThink = LoadTime() - MessageTime();
 	if (nextThink > 0)
 	{
-		pev->nextthink = gpGlobals->time + nextThink;
+		SetNextThink(nextThink);
 		SetThink(&CRevertSaved::LoadThink);
 	}
 	else

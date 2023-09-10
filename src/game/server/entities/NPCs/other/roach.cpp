@@ -175,9 +175,9 @@ void CRoach::Killed(CBaseEntity* attacker, int iGib)
 void CRoach::MonsterThink()
 {
 	if (!UTIL_FindClientInPVS(this))
-		pev->nextthink = gpGlobals->time + RANDOM_FLOAT(1, 1.5);
+	    SetNextThink(RANDOM_FLOAT(1, 1.5)); // no one has seen me in a while, so I will sleep
 	else
-		pev->nextthink = gpGlobals->time + 0.1; // keep monster thinking
+		SetNextThink(0.1f); // keep monster thinking
 
 	float flInterval = StudioFrameAdvance(); // animate
 
@@ -187,7 +187,7 @@ void CRoach::MonsterThink()
 	{
 		// if light value hasn't been collection for the first time yet,
 		// suspend the creature for a second so the world finishes spawning, then we'll collect the light level.
-		pev->nextthink = gpGlobals->time + 1;
+	    SetNextThink(1.0f);
 		m_fLightHacked = true;
 		return;
 	}

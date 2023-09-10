@@ -109,7 +109,7 @@ void CCycler::Spawn()
 
 void CCycler::Think()
 {
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 
 	if (m_animate)
 	{
@@ -202,7 +202,7 @@ void CCyclerSprite::Spawn()
 	pev->effects = 0;
 
 	pev->frame = 0;
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 	m_animate = true;
 	m_lastTime = gpGlobals->time;
 
@@ -217,7 +217,7 @@ void CCyclerSprite::Think()
 	if (ShouldAnimate())
 		Animate(pev->framerate * (gpGlobals->time - m_lastTime));
 
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 	m_lastTime = gpGlobals->time;
 }
 
@@ -274,7 +274,7 @@ void CWreckage::Spawn()
 	pev->effects = 0;
 
 	pev->frame = 0;
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 
 	if (!FStringNull(pev->model))
 	{
@@ -295,7 +295,7 @@ void CWreckage::Precache()
 void CWreckage::Think()
 {
 	StudioFrameAdvance();
-	pev->nextthink = gpGlobals->time + 0.2;
+    SetNextThink(0.2f);
 
 	UpdateShockEffect();
 

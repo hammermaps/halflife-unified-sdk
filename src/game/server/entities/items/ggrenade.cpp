@@ -113,7 +113,7 @@ void CGrenade::Explode(TraceResult* pTrace, int bitsDamageType)
 	pev->effects |= EF_NODRAW;
 	SetThink(&CGrenade::Smoke);
 	pev->velocity = g_vecZero;
-	pev->nextthink = gpGlobals->time + 0.3;
+    SetNextThink(0.3f);
 
 	if (iContents != CONTENTS_WATER)
 	{
@@ -152,7 +152,7 @@ void CGrenade::Killed(CBaseEntity* attacker, int iGib)
 void CGrenade::DetonateUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
 	SetThink(&CGrenade::Detonate);
-	pev->nextthink = gpGlobals->time;
+    SetNextThink(0.0f);
 }
 
 void CGrenade::PreDetonate()
@@ -160,7 +160,7 @@ void CGrenade::PreDetonate()
 	CSoundEnt::InsertSound(bits_SOUND_DANGER, pev->origin, 400, 0.3);
 
 	SetThink(&CGrenade::Detonate);
-	pev->nextthink = gpGlobals->time + 1;
+    SetNextThink(1.0f);
 }
 
 void CGrenade::Detonate()
@@ -196,7 +196,7 @@ void CGrenade::DangerSoundThink()
 	}
 
 	CSoundEnt::InsertSound(bits_SOUND_DANGER, pev->origin + pev->velocity * 0.5, pev->velocity.Length(), 0.2);
-	pev->nextthink = gpGlobals->time + 0.2;
+    SetNextThink(0.2f);
 
 	if (pev->waterlevel != WaterLevel::Dry)
 	{
@@ -314,7 +314,7 @@ void CGrenade::TumbleThink()
 	}
 
 	StudioFrameAdvance();
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 
 	if (pev->dmgtime - 1 < gpGlobals->time)
 	{
@@ -360,7 +360,7 @@ CGrenade* CGrenade::ShootContact(CBaseEntity* owner, Vector vecStart, Vector vec
 
 	// make monsters afaid of it while in the air
 	pGrenade->SetThink(&CGrenade::DangerSoundThink);
-	pGrenade->pev->nextthink = gpGlobals->time;
+	pGrenade->SetNextThink(0.0f);
 
 	// Tumble in air
 	pGrenade->pev->avelocity.x = RANDOM_FLOAT(-100, -500);
@@ -390,10 +390,10 @@ CGrenade* CGrenade::ShootTimed(CBaseEntity* owner, Vector vecStart, Vector vecVe
 
 	pGrenade->pev->dmgtime = gpGlobals->time + time;
 	pGrenade->SetThink(&CGrenade::TumbleThink);
-	pGrenade->pev->nextthink = gpGlobals->time + 0.1;
+	pGrenade->SetNextThink(0.1f);
 	if (time < 0.1)
 	{
-		pGrenade->pev->nextthink = gpGlobals->time;
+		pGrenade->SetNextThink(0.0f);
 		pGrenade->pev->velocity = Vector(0, 0, 0);
 	}
 

@@ -49,7 +49,7 @@ void CLaserSpot::Suspend(float flSuspendTime)
 	pev->effects |= EF_NODRAW;
 
 	SetThink(&CLaserSpot::Revive);
-	pev->nextthink = gpGlobals->time + flSuspendTime;
+	SetNextThink(flSuspendTime);
 }
 
 void CLaserSpot::Revive()

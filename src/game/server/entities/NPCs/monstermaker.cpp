@@ -168,7 +168,7 @@ void CMonsterMaker::Spawn()
 	}
 	else
 	{ // no targetname, just start.
-		pev->nextthink = gpGlobals->time + m_flDelay;
+	    SetNextThink(m_flDelay);
 		m_fActive = true;
 		SetThink(&CMonsterMaker::MakerThink);
 	}
@@ -293,13 +293,12 @@ void CMonsterMaker::ToggleUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE
 		SetThink(&CMonsterMaker::MakerThink);
 	}
 
-	pev->nextthink = gpGlobals->time;
+    SetNextThink(0.0f);
 }
 
 void CMonsterMaker::MakerThink()
 {
-	pev->nextthink = gpGlobals->time + m_flDelay;
-
+    SetNextThink(m_flDelay);
 	MakeMonster();
 }
 

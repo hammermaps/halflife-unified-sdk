@@ -133,6 +133,11 @@ public:
      * @brief Sets a lightstyle for the entities
      */
     int m_iStyle;
+
+    /**
+     * \brief  The entity's current state is active
+     */
+    bool m_activated;
     
 	virtual ~CBaseEntity() {}
 
@@ -186,8 +191,30 @@ public:
 		pev->groundentity = entity ? entity->edict() : nullptr;
 	}
 
-	// initialization functions
+    // think functions
 
+    /**
+     * @brief Set the next think time for disabled entities
+     */
+    virtual void SetNextThink(float delay, bool correctSpeed);
+    virtual void SetNextThink(float delay) {
+	    SetNextThink(delay, false);
+	}
+    virtual void AbsoluteNextThink(float time, bool correctSpeed);
+    virtual void AbsoluteNextThink(float time) {
+        AbsoluteNextThink(time, false);
+    }
+    
+    void SetEternalThink();
+    void DontThink();
+    
+    virtual void ThinkCorrection();
+
+    virtual bool IsMutableAlias() { return false; }
+    virtual CBaseEntity* FollowAlias(CBaseEntity* pFrom) { return nullptr; }
+    
+	// initialization functions
+    
 	/**
 	 *	@brief Called immediately after the constructor has finished to complete initialization.
 	 *	@details Call the base class version at the start when overriding this function.
@@ -210,7 +237,7 @@ public:
 	 *	@brief precaches all resources this entity needs
 	 */
 	virtual void Precache() {}
-
+    
 	/**
 	 *	@brief Handles keyvalues in CBaseEntity that must be handled,
 	 *	even if an entity does not call the base class version of KeyValue.
@@ -227,7 +254,7 @@ public:
 	bool Restore(CRestore& restore);
 	virtual void PostRestore();
 	virtual int ObjectCaps() { return FCAP_ACROSS_TRANSITION; }
-	virtual void Activate() {}
+	virtual void Activate();
 
 	/**
 	 *	@brief Setup the object->object collision box (pev->mins / pev->maxs is the object->world collision box)
@@ -566,6 +593,7 @@ public:
 
 	virtual bool FBecomeProne() { return false; }
 	edict_t* edict() const { return ENT(pev); }
+    int eoffset() { return OFFSET(pev); }
 	int entindex() { return ENTINDEX(edict()); }
 
 	virtual Vector Center() { return (pev->absmax + pev->absmin) * 0.5; } // center point of entity

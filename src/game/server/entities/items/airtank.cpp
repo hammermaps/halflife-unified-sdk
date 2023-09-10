@@ -108,7 +108,7 @@ void CAirtank::TankTouch(CBaseEntity* pOther)
 	EmitSound(CHAN_VOICE, "doors/aliendoor3.wav", 1.0, ATTN_NORM);
 
 	// recharge airtank in 30 seconds
-	pev->nextthink = gpGlobals->time + 30;
+    SetNextThink(30.0f);
 	m_state = false;
 	SUB_UseTargets(this, USE_TOGGLE, 1);
 }

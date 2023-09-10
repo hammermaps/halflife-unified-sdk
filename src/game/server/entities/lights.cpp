@@ -301,7 +301,7 @@ void CLight::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType
             if (m_iTurnOffTime)
             {
                 m_iState = STATE_TURN_OFF;
-                pev->nextthink = gpGlobals->time + m_iTurnOffTime;
+                SetNextThink(m_iTurnOffTime);
             }
             else
             {
@@ -314,7 +314,7 @@ void CLight::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType
             if (m_iTurnOnTime)
             {
                 m_iState = STATE_TURN_ON;
-                pev->nextthink = gpGlobals->time + m_iTurnOnTime;
+                SetNextThink(m_iTurnOnTime);
             }
             else
             {

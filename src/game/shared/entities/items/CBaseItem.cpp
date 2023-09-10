@@ -106,7 +106,7 @@ void CBaseItem::SetupItem(const Vector& mins, const Vector& maxs)
 		SetThink(&CBaseItem::FallThink);
 	}
 
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 
 	// All items are animated by default
 	pev->framerate = 1;
@@ -161,7 +161,7 @@ void CBaseItem::FallThink()
 	}
 	else
 	{
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink(0.1f);
 	}
 #endif
 }
@@ -260,8 +260,7 @@ CBaseItem* CBaseItem::Respawn()
 
 		newItem->SetTouch(nullptr);
 		newItem->SetThink(&CBaseItem::AttemptToMaterialize);
-
-		newItem->pev->nextthink = respawnTime;
+		newItem->AbsoluteNextThink(respawnTime);
 
 		return newItem;
 	}
@@ -319,7 +318,7 @@ void CBaseItem::AttemptToMaterialize()
 		case ItemFallMode::Fall:
 			pev->flags &= ~FL_ONGROUND;
 			SetThink(&CBaseItem::FallThink);
-			pev->nextthink = gpGlobals->time + 0.1;
+			SetNextThink(0.1f);
 			break;
 
 		default: ASSERT(!"Invalid fall mode in CBaseItem::AttemptToMaterialize");
@@ -327,6 +326,6 @@ void CBaseItem::AttemptToMaterialize()
 		return;
 	}
 
-	pev->nextthink = time;
+	AbsoluteNextThink(time);
 #endif
 }

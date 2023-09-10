@@ -93,7 +93,7 @@ public:
 		SetThink(&CSprite::AnimateUntilDead);
 		pev->framerate = framerate;
 		pev->dmgtime = gpGlobals->time + (m_maxFrame / framerate);
-		pev->nextthink = gpGlobals->time;
+		SetNextThink(0.0);
 	}
 
 	void AnimateUntilDead();
@@ -186,7 +186,7 @@ public:
 	inline void LiveForTime(float time)
 	{
 		SetThink(&CBeam::SUB_Remove);
-		pev->nextthink = gpGlobals->time + time;
+		SetNextThink(time);
 	}
 	inline void BeamDamageInstant(TraceResult* ptr, float damage)
 	{

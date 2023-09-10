@@ -55,10 +55,8 @@ void CRopeSegment::Spawn()
 	pev->flags |= FL_ALWAYSTHINK;
 	pev->effects = EF_NODRAW;
 	SetOrigin(pev->origin);
-
 	SetSize(Vector(-30, -30, -30), Vector(30, 30, 30));
-
-	pev->nextthink = gpGlobals->time + 0.5;
+    SetNextThink(0.5f);
 }
 
 void CRopeSegment::Think()

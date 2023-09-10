@@ -435,7 +435,7 @@ void CBreakable::BreakTouch(CBaseEntity* pOther)
 			m_flDelay = 0.1;
 		}
 
-		pev->nextthink = pev->ltime + m_flDelay;
+		SetNextThink(m_flDelay);
 	}
 }
 
@@ -538,6 +538,7 @@ bool CBreakable::TakeDamage(CBaseEntity* inflictor, CBaseEntity* attacker, float
 
 void CBreakable::Die()
 {
+<<<<<<< Updated upstream
 	// Don't allow explosives to damage this again to prevent spawning multiple copies of items and gibs.
 	if (pev->solid == SOLID_NOT)
 	{
@@ -545,10 +546,18 @@ void CBreakable::Die()
 	}
 
 	Vector vecSpot;		// shard origin
+=======
+    // shard origin
+>>>>>>> Stashed changes
 	Vector vecVelocity; // shard velocity
 	char cFlag = 0;
 	int pitch;
 	float fvol;
+
+    // Don't allow explosives to damage this again to prevent spawning multiple copies of items and gibs.
+    if (pev->solid == SOLID_NOT) {
+        return;
+    }
 
 	pitch = 95 + RANDOM_LONG(0, 29);
 
@@ -648,7 +657,7 @@ void CBreakable::Die()
 		vecVelocity.z = 0;
 	}
 
-	vecSpot = pev->origin + (pev->mins + pev->maxs) * 0.5;
+	Vector vecSpot = pev->origin + (pev->mins + pev->maxs) * 0.5;
 	MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, vecSpot);
 	WRITE_BYTE(TE_BREAKMODEL);
 
@@ -721,7 +730,7 @@ void CBreakable::Die()
 	SUB_UseTargets(nullptr, USE_TOGGLE, 0);
 
 	SetThink(&CBreakable::SUB_Remove);
-	pev->nextthink = pev->ltime + 0.1;
+	SetNextThink(0.1f);
 	if (!FStringNull(m_iszSpawnObject))
         Create(STRING(m_iszSpawnObject), VecBModelOrigin(this), pev->angles, this);
     
@@ -942,8 +951,6 @@ void CPushable::Move(CBaseEntity* pOther, bool push)
 			{
 				m_lastSound = RANDOM_LONG(0, 2);
 				EmitSound(CHAN_WEAPON, m_soundNames[m_lastSound], 0.5, ATTN_NORM);
-				//			SetThink( StopPushSound );
-				//			pev->nextthink = pev->ltime + 0.1;
 			}
 			else
 				StopSound(CHAN_WEAPON, m_soundNames[m_lastSound]);

@@ -104,7 +104,7 @@ void CCineMonster::Spawn()
 	if (FStringNull(pev->targetname) || !FStringNull(m_iszIdle))
 	{
 		SetThink(&CCineMonster::CineThink);
-		pev->nextthink = gpGlobals->time + 1.0;
+	    SetNextThink(1.0f);
 		// Wait to be used?
 		if (!FStringNull(pev->targetname))
 			m_startTime = gpGlobals->time + 1E6;
@@ -148,7 +148,7 @@ void CCineMonster::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE u
 	{
 		// if not, try finding them
 		SetThink(&CCineMonster::CineThink);
-		pev->nextthink = gpGlobals->time;
+	    SetNextThink(0.0f);
 	}
 }
 
@@ -376,7 +376,7 @@ void CCineMonster::CineThink()
 	{
 		CancelScript();
 		AIScriptLogger->debug("script \"{}\" can't find monster \"{}\"", STRING(pev->targetname), STRING(m_iszEntity));
-		pev->nextthink = gpGlobals->time + 1.0;
+	    SetNextThink(1.0f);
 	}
 }
 
@@ -445,7 +445,7 @@ void CCineMonster::SequenceDone(CBaseMonster* pMonster)
 	if ((pev->spawnflags & SF_SCRIPT_REPEATABLE) == 0)
 	{
 		SetThink(&CCineMonster::SUB_Remove);
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink(0.1f);
 	}
 
 	// This is done so that another sequence can take over the monster when triggered by the first
@@ -866,7 +866,7 @@ void CScriptedSentence::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_T
 		return;
 	//	AIScriptLogger->debug("Firing sentence: {}", STRING(m_iszSentence));
 	SetThink(&CScriptedSentence::FindThink);
-	pev->nextthink = gpGlobals->time;
+    SetNextThink(0.0f);
 }
 
 void CScriptedSentence::Spawn()
@@ -878,7 +878,7 @@ void CScriptedSentence::Spawn()
 	if (FStringNull(pev->targetname))
 	{
 		SetThink(&CScriptedSentence::FindThink);
-		pev->nextthink = gpGlobals->time + 1.0;
+	    SetNextThink(1.0f);
 	}
 
 	switch (pev->impulse)
@@ -916,14 +916,14 @@ void CScriptedSentence::FindThink()
 		if ((pev->spawnflags & SF_SENTENCE_ONCE) != 0)
 			UTIL_Remove(this);
 		SetThink(&CScriptedSentence::DelayThink);
-		pev->nextthink = gpGlobals->time + m_flDuration + m_flRepeat;
+	    SetNextThink(m_flDuration + m_flRepeat);
 		m_active = false;
 		// AIScriptLogger->debug("{}: found monster {}", STRING(m_iszSentence), STRING(m_iszEntity));
 	}
 	else
 	{
 		// AIScriptLogger->debug("{}: can't find monster {}", STRING(m_iszSentence), STRING(m_iszEntity));
-		pev->nextthink = gpGlobals->time + m_flRepeat + 0.5;
+	    SetNextThink(m_flRepeat + 0.5);
 	}
 }
 
@@ -931,7 +931,7 @@ void CScriptedSentence::DelayThink()
 {
 	m_active = true;
 	if (FStringNull(pev->targetname))
-		pev->nextthink = gpGlobals->time + 0.1;
+		SetNextThink(0.1f);
 	SetThink(&CScriptedSentence::FindThink);
 }
 
@@ -1054,7 +1054,7 @@ void CFurniture::OnCreate()
 void CFurniture::Die()
 {
 	SetThink(&CFurniture::SUB_Remove);
-	pev->nextthink = gpGlobals->time;
+    SetNextThink(0.0f);
 }
 
 void CFurniture::Spawn()

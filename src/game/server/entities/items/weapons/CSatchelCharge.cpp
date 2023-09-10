@@ -51,7 +51,7 @@ void CSatchelCharge::Spawn()
 	SetTouch(&CSatchelCharge::SatchelSlide);
 	SetUse(&CSatchelCharge::DetonateUse);
 	SetThink(&CSatchelCharge::SatchelThink);
-	pev->nextthink = gpGlobals->time + 0.1;
+    SetNextThink(0.1f);
 
 	pev->gravity = 0.5;
 	pev->friction = 0.8;
@@ -91,7 +91,7 @@ void CSatchelCharge::SatchelSlide(CBaseEntity* pOther)
 void CSatchelCharge::SatchelThink()
 {
 	StudioFrameAdvance();
-	pev->nextthink = gpGlobals->time + 0.1;
+    SetNextThink(0.1f);
 
 	if (!IsInWorld())
 	{

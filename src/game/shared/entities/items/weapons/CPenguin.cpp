@@ -72,7 +72,7 @@ void CPenguin::Holster()
 	{
 		m_pPlayer->ClearWeaponBit(m_iId);
 		SetThink(&CPenguin::DestroyItem);
-		pev->nextthink = gpGlobals->time + 0.1;
+	    SetNextThink(0.1f);
 		return;
 	}
 

@@ -393,7 +393,7 @@ void CBasePlayerWeapon::Kill()
 {
 	SetTouch(nullptr);
 	SetThink(&CBasePlayerWeapon::SUB_Remove);
-	pev->nextthink = gpGlobals->time + .1;
+    SetNextThink(0.1f);
 }
 
 void CBasePlayerWeapon::AttachToPlayer(CBasePlayer* pPlayer)
@@ -405,7 +405,7 @@ void CBasePlayerWeapon::AttachToPlayer(CBasePlayer* pPlayer)
 	pev->modelindex = 0;	  // server won't send down to clients if modelindex == 0
 	pev->model = string_t::Null;
 	pev->owner = pPlayer->edict();
-	pev->nextthink = gpGlobals->time + .1;
+    SetNextThink(0.1f);
 	SetTouch(nullptr);
 	SetThink(nullptr); // Clear FallThink function so it can't run while attached to player.
 }
@@ -430,7 +430,7 @@ void CBasePlayerWeapon::AddToPlayer(CBasePlayer* pPlayer)
 	{
 		//This is an exhaustible weapon that has no ammo left. Don't add it, queue it up for destruction instead.
 		SetThink(&CSatchel::DestroyItem);
-		pev->nextthink = gpGlobals->time + 0.1;
+        SetNextThink(0.1f);
 		return false;
 	}
 	*/
@@ -626,7 +626,7 @@ bool CBasePlayerWeapon::ExtractClipAmmo(CBasePlayerWeapon* weapon)
 void CBasePlayerWeapon::RetireWeapon()
 {
 	SetThink(&CBasePlayerWeapon::CallDoRetireWeapon);
-	pev->nextthink = gpGlobals->time + 0.01f;
+    SetNextThink(0.01f);
 }
 
 void CBasePlayerWeapon::DoRetireWeapon()

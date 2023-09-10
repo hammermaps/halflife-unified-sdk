@@ -152,7 +152,7 @@ void CFuncMortarField::FieldUse(CBaseEntity* pActivator, CBaseEntity* pCaller, U
 
 	EmitSoundDyn(CHAN_VOICE, "weapons/mortar.wav", 1.0, ATTN_NONE, 0, pitch);
 
-	float t = 2.5;
+	float time = 2.5;
 	for (int i = 0; i < m_iCount; i++)
 	{
 		Vector vecSpot = vecStart;
@@ -163,11 +163,11 @@ void CFuncMortarField::FieldUse(CBaseEntity* pActivator, CBaseEntity* pCaller, U
 		UTIL_TraceLine(vecSpot, vecSpot + Vector(0, 0, -1) * 4096, ignore_monsters, edict(), &tr);
 
 		CBaseEntity* pMortar = Create("monster_mortar", tr.vecEndPos, Vector(0, 0, 0), pActivator);
-		pMortar->pev->nextthink = gpGlobals->time + t;
-		t += RANDOM_FLOAT(0.2, 0.5);
+		pMortar->SetNextThink(time);
+		time += RANDOM_FLOAT(0.2, 0.5);
 
 		if (i == 0)
-			CSoundEnt::InsertSound(bits_SOUND_DANGER, tr.vecEndPos, 400, 0.3);
+			CSoundEnt::InsertSound(bits_SOUND_DANGER, tr.vecEndPos, 400, 0.3f);
 	}
 }
 
@@ -199,7 +199,7 @@ void CMortar::Spawn()
 	pev->dmg = 200;
 
 	SetThink(&CMortar::MortarExplode);
-	pev->nextthink = 0;
+	DontThink();
 
 	Precache();
 }
@@ -287,7 +287,7 @@ void CMortar::MortarExplode()
 	*/
 
 	SetThink(&CMortar::SUB_Remove);
-	pev->nextthink = gpGlobals->time + 0.1;
+	SetNextThink(0.1f);
 #endif
 }
 
@@ -300,7 +300,7 @@ void CMortar::ShootTimed(EVARS* pevOwner, Vector vecStart, float time)
 	TraceResult tr;
 	UTIL_TraceLine(vecStart, vecStart + Vector(0, 0, -1) * 4096, ignore_monsters, ENT(pMortar->pev), &tr);
 
-	pMortar->pev->nextthink = gpGlobals->time + time;
+	pMortar->SetNextThink(time);
 
 	pMortar->SetOrigin(tr.vecEndPos);
 }

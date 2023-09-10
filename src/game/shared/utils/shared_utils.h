@@ -61,7 +61,22 @@ inline edict_t* ENT(const entvars_t* pev)
 	return pev->pContainingEntity;
 }
 #endif
-
+inline int OFFSET(const edict_t* pent)
+{
+#if _DEBUG
+   // if (!pent)
+        //ALERT(at_error, "Bad ent in OFFSET()\n");
+#endif
+    return (*g_engfuncs.pfnEntOffsetOfPEntity)(pent);
+}
+inline int OFFSET(entvars_t* pev)
+{
+#if _DEBUG
+   // if (!pev)
+    //    ALERT(at_error, "Bad pev in OFFSET()\n");
+#endif
+    return OFFSET(ENT(pev));
+}
 inline entvars_t* VARS(edict_t* pent)
 {
 	if (!pent)

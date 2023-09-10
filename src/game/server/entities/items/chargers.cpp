@@ -196,7 +196,7 @@ void CBaseCharger::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE u
 		return;
 	}
 
-	pev->nextthink = pev->ltime + 0.25;
+    SetNextThink(0.25f);
 	SetThink(&CBaseCharger::Off);
 
 	// Time to recharge yet?
@@ -252,7 +252,7 @@ void CBaseCharger::Off()
 
 	if (0 == m_Juice && m_RechargeDelay != ChargerRechargeDelayNever && m_TotalJuice != 0)
 	{
-		pev->nextthink = pev->ltime + m_RechargeDelay;
+	    SetNextThink(m_RechargeDelay);
 		SetThink(&CBaseCharger::Recharge);
 	}
 	else

@@ -73,7 +73,7 @@ void CRpgRocket::Spawn()
 	pev->velocity = gpGlobals->v_forward * 250;
 	pev->gravity = 0.5;
 
-	pev->nextthink = gpGlobals->time + 0.4;
+	SetNextThink(0.4f);
 
 	pev->dmg = GetSkillFloat("plr_rpg"sv);
 }
@@ -120,7 +120,7 @@ void CRpgRocket::IgniteThink()
 
 	// set to follow laser spot
 	SetThink(&CRpgRocket::FollowThink);
-	pev->nextthink = gpGlobals->time + 0.1;
+    SetNextThink(0.1f);
 }
 
 void CRpgRocket::FollowThink()
@@ -194,5 +194,5 @@ void CRpgRocket::FollowThink()
 	}
 	// WeaponsLogger->debug("{:.0f}", flSpeed);
 
-	pev->nextthink = gpGlobals->time + 0.1;
+    SetNextThink(0.1f);
 }
