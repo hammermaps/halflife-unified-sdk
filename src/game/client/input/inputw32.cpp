@@ -30,15 +30,12 @@
 #include <SDL2/SDL_mouse.h>
 #include <SDL2/SDL_gamecontroller.h>
 
+void IN_ResetMouse();
+
 #define MOUSE_BUTTON_COUNT 5
 
 // Set this to 1 to show mouse cursor.  Experimental
 bool g_iVisibleMouse = false;
-
-/**
- *	@brief Tells the input code to reset the mouse position to center.
- */
-bool g_ResetMousePosition = false;
 
 extern bool iMouseInUse;
 
@@ -68,6 +65,16 @@ static cvar_t* m_rawinput = nullptr;
 static bool IN_UseRawInput()
 {
 	return m_rawinput->value != 0;
+}
+
+static SDL_bool mouseRelative = SDL_TRUE;
+
+static void IN_SetMouseRelative(bool enable)
+{
+	const SDL_bool value = enable ? SDL_TRUE : SDL_FALSE;
+
+	SDL_SetRelativeMouseMode(value);
+	mouseRelative = value;
 }
 
 static bool m_bMouseThread = false;
@@ -186,8 +193,6 @@ struct MouseThread
 
 MouseThread s_MouseThread;
 
-SDL_bool mouseRelative = SDL_TRUE;
-
 std::atomic<Point> s_mouseDelta;
 std::atomic<Point> current_pos;
 std::atomic<Point> old_mouse_pos;
@@ -257,20 +262,21 @@ void DLLEXPORT IN_ActivateMouse()
 		mouseactive = true;
 	}
 
+	if (g_iVisibleMouse
 #ifdef WIN32
-	if (!IN_UseRawInput())
+		|| !IN_UseRawInput()
+#endif
+	)
 	{
-		SDL_SetRelativeMouseMode(SDL_FALSE);
-		mouseRelative = SDL_FALSE;
+		IN_SetMouseRelative(false);
 	}
 	else
 	{
-		mouseRelative = SDL_TRUE;
-		SDL_SetRelativeMouseMode(SDL_TRUE);
+		IN_SetMouseRelative(true);
 	}
-#else
-	SDL_SetRelativeMouseMode(SDL_TRUE);
-#endif
+
+	// Clear out accumulated mouse input from main menu movement.
+	IN_ResetMouse();
 }
 
 
@@ -292,14 +298,7 @@ void DLLEXPORT IN_DeactivateMouse()
 		mouseactive = false;
 	}
 
-#ifdef WIN32
-	if (IN_UseRawInput())
-	{
-		mouseRelative = SDL_FALSE;
-	}
-
-#endif
-	SDL_SetRelativeMouseMode(SDL_FALSE);
+	IN_SetMouseRelative(false);
 }
 
 void IN_StartupMouse()
@@ -371,10 +370,9 @@ void IN_ResetMouse()
 {
 	// no work to do in SDL
 #ifdef WIN32
-	if (IN_UseRawInput())
+	if (IN_UseRawInput() && !g_iVisibleMouse)
 	{
-		mouseRelative = SDL_TRUE;
-		SDL_SetRelativeMouseMode(SDL_TRUE);
+		IN_SetMouseRelative(true);
 	}
 
 	if (!IN_UseRawInput() && mouseactive && gEngfuncs.GetWindowCenterX && gEngfuncs.GetWindowCenterY)
@@ -572,15 +570,13 @@ void IN_MouseMove(float frametime, usercmd_t* cmd)
 	gEngfuncs.SetViewAngles(viewangles);
 
 #ifdef WIN32
-	if (!IN_UseRawInput() && SDL_FALSE != mouseRelative)
+	if ((!IN_UseRawInput() && SDL_FALSE != mouseRelative) || g_iVisibleMouse)
 	{
-		SDL_SetRelativeMouseMode(SDL_FALSE);
-		mouseRelative = SDL_FALSE;
+		IN_SetMouseRelative(false);
 	}
 	else if (IN_UseRawInput() && SDL_FALSE == mouseRelative)
 	{
-		SDL_SetRelativeMouseMode(SDL_TRUE);
-		mouseRelative = SDL_TRUE;
+		IN_SetMouseRelative(true);
 	}
 #endif
 
@@ -1009,12 +1005,6 @@ void IN_JoyMove(float frametime, usercmd_t* cmd)
 
 void IN_Move(float frametime, usercmd_t* cmd)
 {
-	if (g_ResetMousePosition)
-	{
-		IN_ResetMouse();
-		g_ResetMousePosition = false;
-	}
-
 	if (!iMouseInUse && mouseactive)
 	{
 		IN_MouseMove(frametime, cmd);

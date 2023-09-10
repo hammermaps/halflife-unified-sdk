@@ -619,6 +619,23 @@ void SV_CreateClientCommands()
 			} },
 		{.Flags = ClientCommandFlag::Cheat});
 
+	g_ClientCommands.Create("set_crosshair_color", [](CBasePlayer* player, const auto& args)
+		{
+			if (args.Count() >= 4)
+			{
+				Vector color{255, 255, 255};
+				UTIL_StringToVector(color, CMD_ARGS());
+
+				player->SetCrosshairColor({static_cast<std::uint8_t>(color.x),
+					static_cast<std::uint8_t>(color.y),
+					static_cast<std::uint8_t>(color.z)});
+			}
+			else
+			{
+				UTIL_ConsolePrint(player, "Usage: set_crosshair_color <r> <g> <b> (values in range 0-255)\n");
+			} },
+		{.Flags = ClientCommandFlag::Cheat});
+
 	g_ClientCommands.Create("set_suit_light_type", [](CBasePlayer* player, const auto& args)
 		{
 			if (args.Count() > 1)
@@ -1939,6 +1956,8 @@ int GetWeaponData(edict_t* player, weapon_data_t* info)
 	if (!pl)
 		return 1;
 
+	pl->m_LastWeaponDataUpdateTime = gpGlobals->time;
+
 	// go through all of the weapons and make a list of the ones to pack
 	for (i = 0; i < MAX_WEAPON_SLOTS; i++)
 	{
@@ -2108,6 +2127,12 @@ void CmdStart(const edict_t* player, const usercmd_t* cmd, unsigned int random_s
 
 	if (!pl)
 		return;
+
+	if (cmd->weaponselect != 0)
+	{
+		pl->SelectItem(cmd->weaponselect);
+		((usercmd_t*)cmd)->weaponselect = 0;
+	}
 
 	if (pl->pev->groupinfo != 0)
 	{

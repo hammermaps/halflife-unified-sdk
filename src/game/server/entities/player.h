@@ -286,6 +286,9 @@ public:
 	// Not saved, used to update client.
 	std::uint64_t m_ClientWeaponBits;
 
+	// Not saved, tracks the last time the engine called GetWeaponData.
+	float m_LastWeaponDataUpdateTime{0};
+
 	std::uint32_t m_HudFlags = 0;
 
 	// shared ammo slots
@@ -441,6 +444,7 @@ public:
 	void SelectNextItem(int iItem);
 	void SelectLastItem();
 	void SelectItem(const char* pstr);
+	void SelectItem(int iId);
 
 private:
 	void DeployWeapon(CBasePlayerWeapon* weapon);
@@ -619,6 +623,7 @@ private:
 
 	// For saving and level changes.
 	int m_HudColor = RGB_HUD_COLOR.ToInteger();
+	int m_CrosshairColor = RGB_CROSSHAIR_COLOR.ToInteger();
 
 	bool m_bInfiniteAir;
 	bool m_bInfiniteArmor;
@@ -630,6 +635,12 @@ public:
 	 *	@details The player must be fully connected and ready to receive user messages for this to work
 	 */
 	void SetHudColor(RGB24 color);
+
+	/**
+	 *	@brief Sets the player's crosshair color
+	 *	@details The player must be fully connected and ready to receive user messages for this to work
+	 */
+	void SetCrosshairColor(RGB24 color);
 
 	void SendScoreInfo(CBasePlayer* destination);
 	void SendScoreInfoAll();

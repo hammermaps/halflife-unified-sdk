@@ -41,6 +41,7 @@
 #include "config/ConditionEvaluator.h"
 #include "config/GameConfig.h"
 #include "config/sections/CommandsSection.h"
+#include "config/sections/CrosshairColorSection.h"
 #include "config/sections/EchoSection.h"
 #include "config/sections/EntityClassificationsSection.h"
 #include "config/sections/EntityTemplatesSection.h"
@@ -72,6 +73,9 @@ constexpr char DefaultMapConfigFileName[] = "cfg/DefaultMapConfig.json";
 cvar_t servercfgfile = {"sv_servercfgfile", "cfg/server/server.json", FCVAR_NOEXTRAWHITEPACE | FCVAR_ISPATH};
 cvar_t mp_gamemode = {"mp_gamemode", "", FCVAR_SERVER};
 cvar_t mp_createserver_gamemode = {"mp_createserver_gamemode", "", FCVAR_SERVER};
+
+cvar_t sv_infinite_ammo = {"sv_infinite_ammo", "0", FCVAR_SERVER};
+cvar_t sv_bottomless_magazines = {"sv_bottomless_magazines", "0", FCVAR_SERVER};
 
 ServerLibrary::ServerLibrary() = default;
 ServerLibrary::~ServerLibrary() = default;
@@ -109,6 +113,9 @@ bool ServerLibrary::Initialize()
 	g_engfuncs.pfnCVarRegister(&mp_gamemode);
 	g_engfuncs.pfnCVarRegister(&mp_createserver_gamemode);
 
+	g_engfuncs.pfnCVarRegister(&sv_infinite_ammo);
+	g_engfuncs.pfnCVarRegister(&sv_bottomless_magazines);
+
 	g_ConCommands.CreateCommand(
 		"mp_list_gamemodes", [](const auto&)
 		{ PrintMultiplayerGameModes(); },
@@ -116,6 +123,30 @@ bool ServerLibrary::Initialize()
 
 	g_ConCommands.CreateCommand("load_all_maps", [this](const auto&)
 		{ LoadAllMaps(); });
+
+	g_ConCommands.RegisterChangeCallback(&sv_allowbunnyhopping, [](const auto& state)
+		{
+			const bool allowBunnyHopping = state.Cvar->value != 0;
+
+			const auto setting = UTIL_ToString(allowBunnyHopping ? 1 : 0);
+
+			for (int i = 1; i <= gpGlobals->maxClients; ++i)
+			{
+				auto player = UTIL_PlayerByIndex(i);
+
+				if (!player)
+				{
+					continue;
+				}
+
+				g_engfuncs.pfnSetPhysicsKeyValue(player->edict(), "bj", setting.c_str());
+			} });
+
+	g_ConCommands.RegisterChangeCallback(&sv_infinite_ammo, [](const auto& state)
+		{ g_Skill.SetValue("infinite_ammo", state.Cvar->value); });
+
+	g_ConCommands.RegisterChangeCallback(&sv_bottomless_magazines, [](const auto& state)
+		{ g_Skill.SetValue("bottomless_magazines", state.Cvar->value); });
 
 	RegisterCommandWhitelistSchema();
 
@@ -157,6 +188,8 @@ static void ForceCvarToValue(cvar_t* cvar, float value)
 
 void ServerLibrary::RunFrame()
 {
+	GameLibrary::RunFrame();
+
 	// Force the download cvars to enabled so we can download network data.
 	ForceCvarToValue(m_AllowDownload, 1);
 	ForceCvarToValue(m_SendResources, 1);
@@ -330,6 +363,12 @@ void ServerLibrary::PlayerActivating(CBasePlayer* player)
 		player->SetHudColor(*m_MapState->m_HudColor);
 	}
 
+	// Override the crosshair color.
+	if (m_MapState->m_CrosshairColor)
+	{
+		player->SetCrosshairColor(*m_MapState->m_CrosshairColor);
+	}
+
 	// Override the light type.
 	if (m_MapState->m_LightType)
 	{
@@ -390,6 +429,7 @@ void ServerLibrary::CreateConfigDefinitions()
 
 			sections.push_back(std::make_unique<EchoSection<ServerConfigContext>>());
 			sections.push_back(std::make_unique<CommandsSection<ServerConfigContext>>(&g_CommandWhitelist));
+			sections.push_back(std::make_unique<CrosshairColorSection>());
 			sections.push_back(std::make_unique<SentencesSection>());
 			sections.push_back(std::make_unique<MaterialsSection>());
 			sections.push_back(std::make_unique<SkillSection>());
@@ -553,6 +593,17 @@ void ServerLibrary::LoadServerConfigFiles()
 	sentences::g_Sentences.LoadSentences(context.SentencesFiles);
 	g_MaterialSystem.LoadMaterials(context.MaterialsFiles);
 	g_Skill.LoadSkillConfigFiles(context.SkillFiles);
+
+	// Override skill vars with cvars if they are enabled only.
+	if (sv_infinite_ammo.value != 0)
+	{
+		g_Skill.SetValue("infinite_ammo", sv_infinite_ammo.value);
+	}
+
+	if (sv_bottomless_magazines.value != 0)
+	{
+		g_Skill.SetValue("bottomless_magazines", sv_bottomless_magazines.value);
+	}
 
 	m_MapState->m_GlobalModelReplacement = g_ReplacementMaps.LoadMultiple(
 		context.GlobalModelReplacementFiles, {.CaseSensitive = false});

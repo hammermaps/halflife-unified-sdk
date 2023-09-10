@@ -139,6 +139,10 @@ Converts the Opposing Force scientist `clipboard` and `stick` heads to use the `
 
 Converts `item_suit`'s model to use `w_pcv.mdl` in Opposing Force maps.
 
+### DisableFuncTankOfPersistenceUpgrade
+
+Disables the `persistence` behavior for all Opposing Force tank entities to match the original's behavior.
+
 ### FixBlackOpsSpawnDelayUpgrade
 
 Sets the `assassin4_spawn` `monstermaker` in `of6a1` to spawn a Black Ops assassin immediately
@@ -169,6 +173,19 @@ Fixes `monster_generic` entities that use `hgrunt_opfor.mdl` to use the correct 
 
 Fixes the Pit Worm's Nest bridge possibly breaking if triggered too soon.
 
+### Of5a2FixXenBullsquidScriptsUpgrade
+
+Fixes the Bullsquids in `of5a2` having the wrong targetnames causing the eating scripts to fail.
+
+### Of6a5FixGenewormArriveSoundUpgrade
+
+Adds a missing `.wav` extension to the sound played when the Geneworm enters in `of6a5`.
+
+### OfBoot1FixOspreyScriptUpgrade
+
+Prevents the Osprey in `ofboot1` from switching to the `rotor` animation
+and falling through the ground after loading a save game.
+
 ### RemoveGameModeSettingsUpgrade
 
 Removes the CTF game mode settings from Opposing Force maps.
@@ -195,9 +212,18 @@ Sets the `Remove On Fire` spawnflag on the `trigger_auto` entity
 used to start the script on `ba_outro`.
 This fixes the script restarting on save load.
 
+### BaOutroFixGruntsBodyUpgrade
+
+Adjusts the body values of the Human Grunts in `ba_outro` to match the Half-Life script
+and to avoid clipping weapons into Freeman.
+
+### BaPower2RemoveChapterTitleUpgrade
+
+Removes the `chaptertitle` key from `worldspawn` in `ba_power2` to remove the redundant chapter title text.
+
 ### BaSecurity2ChangeHologramModelUpgrade
 
-Changes Gina model in ba_security2 to allow playing push cart sequence.
+Changes Gina model in `ba_security2` to allow playing push cart sequence.
 
 ### BaTram1FixSuitUpgrade
 
@@ -205,11 +231,12 @@ Removes the HEV suit from `ba_tram1` (now given by map config).
 
 ### BaYard1FixDeadScientistModelUpgrade
 
-Changes incorrect dead scientist head (Rosenberg) in ba_yard1 to use the same as in ba_yard4 (Glasses).
+Changes incorrect dead scientist head (Rosenberg) in `ba_yard1` to use the same as in `ba_yard4` (Glasses).
 
 ### BaYard4aSlavesUpgrade
 
-Fixes the Alien Slaves in ba_yard4a being resurrected by triggering them instead of the scripted_sequence keeping them in stasis.
+Fixes the Alien Slaves in `ba_yard4a` being resurrected by triggering them
+instead of the `scripted_sequence` keeping them in stasis.
 
 ### ChangeBlueShiftSentencesUpgrade
 

@@ -23,6 +23,7 @@
 #pragma once
 
 #include <array>
+#include <string>
 #include <vector>
 
 #include <EASTL/fixed_string.h>
@@ -353,9 +354,9 @@ private:
 		HSPRITE m_hSprite1 = 0;
 		HSPRITE m_hSprite2 = 0;
 		HSPRITE m_hBeam = 0;
-		Rect* m_prc1 = nullptr;
-		Rect* m_prc2 = nullptr;
-		Rect* m_prcBeam = nullptr;
+		const Rect* m_prc1 = nullptr;
+		const Rect* m_prc2 = nullptr;
+		const Rect* m_prcBeam = nullptr;
 		int m_iWidth = 0; // width of the battery innards
 	};
 
@@ -667,6 +668,7 @@ public:
 
 private:
 	cvar_t* m_ShowDebugInfo = nullptr;
+
 	std::string m_GameMode;
 };
 
@@ -745,6 +747,8 @@ public:
 	 */
 	RGB24 m_HudItemColor = RGB_HUD_COLOR;
 
+	RGB24 m_CrosshairColor = RGB_CROSSHAIR_COLOR;
+
 	int m_iFontHeight;
 	int DrawHudNumber(int x, int y, int iFlags, int iNumber, const RGB24& color);
 	int DrawHudString(int x, int y, int iMaxX, const char* szString, const RGB24& color);
@@ -776,8 +780,13 @@ public:
 		return (index < 0) ? 0 : m_Sprites[index].Handle;
 	}
 
-	Rect& GetSpriteRect(int index)
+	const Rect& GetSpriteRect(int index)
 	{
+		if (index == -1)
+		{
+			return EmptyRect;
+		}
+
 		return m_Sprites[index].Rectangle;
 	}
 
@@ -824,6 +833,7 @@ public:
 	void MsgFunc_Damage(const char* pszName, BufferReader& reader);
 	void MsgFunc_GameMode(const char* pszName, BufferReader& reader);
 	void MsgFunc_HudColor(const char* pszName, BufferReader& reader);
+	void MsgFunc_CrosshairColor(const char* pszName, BufferReader& reader);
 	void MsgFunc_Logo(const char* pszName, BufferReader& reader);
 	void MsgFunc_ResetHUD(const char* pszName, BufferReader& reader);
 	void MsgFunc_InitHUD(const char* pszName, BufferReader& reader);

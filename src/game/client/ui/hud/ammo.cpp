@@ -296,23 +296,24 @@ WEAPON* WeaponsResource::GetNextActivePos(int iSlot, int iSlotPos)
 	if (static_cast<std::size_t>(iSlot) >= rgSlots.size())
 		return nullptr;
 
-	// Start with the position after the current one.
-	++iSlotPos;
+	auto& weapons = rgSlots[iSlot];
 
-	for (auto weapon : rgSlots[iSlot])
+	// First find the one we're starting with.
+	for (std::size_t i = 0; i < weapons.size(); ++i)
 	{
-		if (weapon->Info->Position < iSlotPos)
+		if (weapons[i]->Info->Position == iSlotPos)
 		{
-			continue;
-		}
+			// Find first weapon that has ammo after this one.
+			while (++i < weapons.size())
+			{
+				if (HasAmmo(weapons[i]))
+				{
+					return weapons[i];
+				}
+			}
 
-		if (weapon->Info->Position == iSlotPos && HasAmmo(weapon))
-		{
-			return weapon;
+			break;
 		}
-
-		// Try the next one.
-		++iSlotPos;
 	}
 
 	return nullptr;
@@ -446,7 +447,7 @@ void CHudAmmo::Think()
 	{
 		if (gpActiveSel != (WEAPON*)1)
 		{
-			SendWeaponSelectCommand(gpActiveSel->Info->Name.c_str());
+			// SendWeaponSelectCommand(gpActiveSel->Info->Name.c_str());
 			g_weaponselect = gpActiveSel->Info->Id;
 		}
 
@@ -524,7 +525,7 @@ void WeaponsResource::SelectSlot(int iSlot, bool fAdvance, int iDirection)
 			WEAPON* p2 = GetNextActivePos(p->Info->Slot, p->Info->Position);
 			if (!p2)
 			{ // only one active item in bucket, so change directly to weapon
-				SendWeaponSelectCommand(p->Info->Name.c_str());
+				// SendWeaponSelectCommand(p->Info->Name.c_str());
 				g_weaponselect = p->Info->Id;
 				return;
 			}
@@ -982,7 +983,7 @@ void CHudAmmo::DrawCrosshair(int x, int y)
 		}
 	};
 
-	renderer(x, y, m_Crosshair, gHUD.m_HudItemColor);
+	renderer(x, y, m_Crosshair, gHUD.m_CrosshairColor);
 	renderer(x, y, m_AutoaimCrosshair, RGB_REDISH);
 }
 

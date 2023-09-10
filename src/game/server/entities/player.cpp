@@ -116,6 +116,8 @@ DEFINE_FIELD(m_SuitLightType, FIELD_INTEGER),
 	// DEFINE_FIELD(m_SndLast, FIELD_EHANDLE),
 	// DEFINE_FIELD(m_flSndRange, FIELD_FLOAT),
 
+	DEFINE_FIELD(m_flStartCharge, FIELD_TIME),
+
 	DEFINE_FIELD(m_pRope, FIELD_CLASSPTR),
 	DEFINE_FIELD(m_flLastClimbTime, FIELD_TIME),
 	DEFINE_FIELD(m_bIsClimbing, FIELD_BOOLEAN),
@@ -124,6 +126,7 @@ DEFINE_FIELD(m_SuitLightType, FIELD_INTEGER),
 	DEFINE_FIELD(m_DisplacerReturn, FIELD_POSITION_VECTOR),
 	DEFINE_FIELD(m_DisplacerSndRoomtype, FIELD_INTEGER),
 	DEFINE_FIELD(m_HudColor, FIELD_INTEGER),
+	DEFINE_FIELD(m_CrosshairColor, FIELD_INTEGER),
 
 	DEFINE_FIELD(m_bInfiniteAir, FIELD_BOOLEAN),
 	DEFINE_FIELD(m_bInfiniteArmor, FIELD_BOOLEAN),
@@ -2743,6 +2746,7 @@ void CBasePlayer::Spawn()
 	SetHasJetpack(false);
 
 	g_engfuncs.pfnSetPhysicsKeyValue(edict(), "hl", "1");
+	g_engfuncs.pfnSetPhysicsKeyValue(edict(), "bj", UTIL_ToString(sv_allowbunnyhopping.value != 0 ? 1 : 0).c_str());
 	g_engfuncs.pfnSetPhysicsKeyValue(edict(), "jpj", "0");
 
 	m_iFOV = 0;		   // init field of view.
@@ -3999,6 +4003,7 @@ void CBasePlayer::UpdateClientData()
 	{
 		// Reinitialize hud color to saved off value.
 		SetHudColor(RGB24::FromInteger(m_HudColor));
+		SetCrosshairColor(RGB24::FromInteger(m_CrosshairColor));
 	}
 
 	// Update Flashlight
@@ -4922,6 +4927,17 @@ void CBasePlayer::SetHudColor(RGB24 color)
 	m_HudColor = color.ToInteger();
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgHudColor, nullptr, this);
+	g_engfuncs.pfnWriteByte(color.Red);
+	g_engfuncs.pfnWriteByte(color.Green);
+	g_engfuncs.pfnWriteByte(color.Blue);
+	g_engfuncs.pfnMessageEnd();
+}
+
+void CBasePlayer::SetCrosshairColor(RGB24 color)
+{
+	m_CrosshairColor = color.ToInteger();
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgCrosshairColor, nullptr, this);
 	g_engfuncs.pfnWriteByte(color.Red);
 	g_engfuncs.pfnWriteByte(color.Green);
 	g_engfuncs.pfnWriteByte(color.Blue);
